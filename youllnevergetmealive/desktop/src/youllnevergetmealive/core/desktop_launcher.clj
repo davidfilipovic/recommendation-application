@@ -6,5 +6,5 @@
 
 (defn -main
   []
-  (LwjglApplication. youllnevergetmealive "youllnevergetmealive" 800 600)
+  (LwjglApplication. youllnevergetmealive "youllnevergetmealive" 1600 800)
   (Keyboard/enableRepeatEvents true))
