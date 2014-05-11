@@ -55,6 +55,18 @@
  ;;   :right (assoc entity :x (+ (:x entity) speed))
  ;;   :left (assoc entity :x (- (:x entity) speed)))
  ;; entity))
+(defn return-speed-of-player
+  [{:keys [x-speed y-speed]}]
+  [(cond 
+     (key-pressed? :dpad-down) (* -1 speed)
+     (key-pressed? :dpad-up) speed
+     :else y-speed)
+     (cond 
+       (key-pressed? :dpad-left) (* -1 speed)
+       (key-pressed? :dpad-right) speed
+       :else x-speed)])
+
+
 
 (defn get-mouse-position
   [screen input-x input-y]
@@ -66,10 +78,16 @@
         delta-x (- x1 x)]
   (/ (* 180 (Math/atan2 delta-y delta-x)) Math/PI)))
 
-(defn rotate [player mouse-position]
+(defn rotate
+  [player mouse-position]
   (assoc player :angle (calculate-gradient-of-a-line
                         (:x player) (:y player) (:x mouse-position) (:y mouse-position))))
 
+(defn move 
+  [{:keys [delta-time]} {:keys [x y] :as player} mouse-position]
+     (let  [x-difference (* 5 delta-time)
+            y-difference (* 5 delta-time)]
+    (assoc player :x (+ x x-difference) :y (+ y y-difference))))
 
 (defscreen main-screen
 
@@ -81,7 +99,7 @@
     (let [background (texture "space1.jpg")
           player (assoc (texture "images.jpg")
          :x 800 :y 400
-         :width 70 :height 70 :angle -90 :player? true)]
+         :width 70 :height 70 :angle 0 :player? true)]
     [background player]))
 
   :on-render
@@ -89,17 +107,24 @@
     (clear!)
     (render! screen entities))
 
-   :on-key-down
+  :on-key-down
   (fn [screen entities]
     (cond
       (which-direction) (move-player entities)
       :else entities))
 
- :on-mouse-moved
- (fn [{:keys [:input-x :input-y] :as screen} entities]
+  :on-mouse-moved
+  (fn [{:keys [:input-x :input-y] :as screen} entities]
     (let [player (return-player entities)
           mouse-position (get-mouse-position screen input-x input-y)]
       (rotate player mouse-position)))
+ 
+  :on-touch-down 
+  (fn [{:keys [input-x input-y button] :as screen} entities]
+   (when (= (button-code :right) button)
+     (let [player (return-player entities)
+          mouse-position (get-mouse-position screen input-x input-y)]
+     (move screen player mouse-position)))) 
 
   :on-timer
   (fn [screen entities]
