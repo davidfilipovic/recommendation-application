@@ -1,11 +1,13 @@
 (ns youllnevergetmealive.core
   (:require [play-clj.core :refer :all]
-            [play-clj.g2d :refer :all]))
+            [play-clj.g2d :refer :all]
+            [incanter.core :refer :all]))
 
 
 (def speed 10)
 (def distance 50)
-(declare youllnevergetmealive main-screen)
+(declare youllnevergetmealive main-screen return-player)
+
 
 
 (defn create-enemy
@@ -26,7 +28,7 @@
 
 (defn change-player-position
   [{:keys [player?] :as entity}]
-  (if player? 
+  (if player?
     (let [direction (which-direction)
           new-x (case direction
                   :left (- (:x entity) speed)
@@ -44,19 +46,29 @@
   (map change-player-position entities))
 
 
-(defn move
-  [{:keys [player?] :as entity} direction]
-  (if player?
-  (case direction
-    :down (assoc entity :y (- (:y entity) speed))
-    :up (assoc entity :y (+ (:y entity) speed))
-    :right (assoc entity :x (+ (:x entity) speed))
-    :left (assoc entity :x (- (:x entity) speed)))
-  entity))
+;;(defn move
+ ;; [{:keys [player?] :as entity} direction]
+ ;; (if player?
+ ;; (case direction
+ ;;   :down (assoc entity :y (- (:y entity) speed))
+ ;;   :up (assoc entity :y (+ (:y entity) speed))
+ ;;   :right (assoc entity :x (+ (:x entity) speed))
+ ;;   :left (assoc entity :x (- (:x entity) speed)))
+ ;; entity))
 
+(defn get-mouse-position
+  [screen input-x input-y]
+  (input->screen screen input-x input-y))
 
-(defn rotate [entity]
-  (assoc entity :angle calculate-gradient-of-a-line))
+(defn calculate-gradient-of-a-line
+  [x y x1 y1]
+  (let [delta-y (- y1 y)
+        delta-x (- x1 x)]
+  (/ (* 180 (Math/atan2 delta-y delta-x)) Math/PI)))
+
+(defn rotate [player mouse-position]
+  (assoc player :angle (calculate-gradient-of-a-line
+                        (:x player) (:y player) (:x mouse-position) (:y mouse-position))))
 
 
 (defscreen main-screen
@@ -68,7 +80,8 @@
   ;; (sound "song.mp3" :play)
     (let [background (texture "space1.jpg")
           player (assoc (texture "images.jpg")
-           :x 50 :y 50 :width 100 :height 100 :angle 90 :player? true)]
+         :x 800 :y 400
+         :width 70 :height 70 :angle -90 :player? true)]
     [background player]))
 
   :on-render
@@ -81,22 +94,12 @@
     (cond
       (which-direction) (move-player entities)
       :else entities))
-  
-  :on-mouse-moved
-  (fn [screen entities]
-    (rotate (second entities)))
 
- ;; :on-touch-down
-  ;;(fn [screen entities]
-    ;;(cond
-      ;;(> (:input-y screen) (* (game :height) (/ 2 3)))
-      ;;(move (first entities) :down)
-     ;; (< (:input-y screen) (/ (game :height) 3))
-     ;; (move (first entities) :up)
-     ;; (> (:input-x screen) (* (game :width) (/ 2 3)))
-     ;; (move (first entities) :right)
-     ;; (< (:input-x screen) (/ (game :width) 3))
-     ;; (move (first entities) :left)))
+ :on-mouse-moved
+ (fn [{:keys [:input-x :input-y] :as screen} entities]
+    (let [player (return-player entities)
+          mouse-position (get-mouse-position screen input-x input-y)]
+      (rotate player mouse-position)))
 
   :on-timer
   (fn [screen entities]
@@ -107,6 +110,10 @@
   (fn [screen entities]
     (height! screen 800)))
 
+
+(defn return-player
+  [entities]
+  (some #(if (:player? %) %) entities))
 
 (defscreen blank-screen
   :on-render
