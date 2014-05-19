@@ -5,10 +5,11 @@
 
 
 (def speed 10)
+(def slow-down-speed 0.8)
 (def distance 50)
 (declare youllnevergetmealive main-screen return-player)
-
-
+(def start-time (java.util.Date.))
+(def end-time (java.util.Date.))
 
 (defn create-enemy
   []
@@ -55,6 +56,8 @@
  ;;   :right (assoc entity :x (+ (:x entity) speed))
  ;;   :left (assoc entity :x (- (:x entity) speed)))
  ;; entity))
+
+
 (defn return-speed-of-player
   [{:keys [x-speed y-speed]}]
   [(cond 
@@ -67,10 +70,10 @@
        :else x-speed)])
 
 
-
 (defn get-mouse-position
   [screen input-x input-y]
   (input->screen screen input-x input-y))
+
 
 (defn calculate-gradient-of-a-line
   [x y x1 y1]
@@ -78,19 +81,56 @@
         delta-x (- x1 x)]
   (/ (* 180 (Math/atan2 delta-y delta-x)) Math/PI)))
 
+
 (defn rotate
   [player mouse-position]
   (assoc player :angle (calculate-gradient-of-a-line
                         (:x player) (:y player) (:x mouse-position) (:y mouse-position))))
 
+
+(defn get-speed
+  [{:keys [x-speed y-speed max-speed]} mouse-position]
+    (let [x (float (- (game :x) (/ (game :width) 2)))
+          y (float (- (/ (game :height) 2) (game :y)))
+          x-adjust (* max-speed (Math/abs (double (/ x y))))
+          y-adjust (* max-speed (Math/abs (double (/ y x))))]
+      [(* (Math/signum x) (min max-speed x-adjust))
+       (* (Math/signum y) (min max-speed y-adjust))]))
+
+(defn slow-down
+  [slow-speed]
+  (let [speed1 (* slow-speed slow-down-speed)]
+    (if (< ( Math/abs speed1) 0.5)
+      0
+      speed)))
+
 (defn move 
-  [{:keys [delta-time]} {:keys [x y] :as player} mouse-position]
-     (let  [x-difference (* 5 delta-time)
-            y-difference (* 5 delta-time)]
-    (assoc player :x (+ x x-difference) :y (+ y y-difference))))
+  [{:keys [delta-time]} {:keys [x y health] :as player} mouse-position]
+  (let [[x-speed y-speed] (get-speed player mouse-position)
+        x-difference (* x-speed (- (.getTime end-time) (.getTime start-time)))
+        y-difference (* y-speed (- (.getTime end-time) (.getTime start-time)))] ;(- (.getTime end-time) (.getTime start-time)))]
+       (if (or (not= 0 x-difference) (not= 0 y-difference))
+         (assoc player 
+           :x (+ x x-speed)
+           :y (+ y y-speed)
+           :x-speed (slow-down x-speed)
+           :y-speed (slow-down y-speed)
+           :x-difference x-difference
+           :y-difference y-difference)
+         player)))
+
+
+(defn move1 [{:keys [x y] :as player} mouse-position]
+  (let [x-distance (- (:x mouse-position) x)
+        y-distance (- (:y mouse-position) y)
+        distance (Math/sqrt (+ (* x-distance x-distance) (* y-distance y-distance)))]
+    (if (> distance 1)
+      (assoc player 
+             :x (+ x (* x-distance slow-down-speed))
+             :y (+ y (* y-distance slow-down-speed)))
+      player)))
 
 (defscreen main-screen
-
   :on-show
   (fn [screen entities]
     (update! screen :renderer (stage) :camera (orthographic))
@@ -98,13 +138,24 @@
   ;; (sound "song.mp3" :play)
     (let [background (texture "space1.jpg")
           player (assoc (texture "images.jpg")
-         :x 800 :y 400
-         :width 70 :height 70 :angle 0 :player? true)]
+         :x (float (/ (game :width) 2)) 
+         :y (float (/ (game :height) 2))
+         :width 70 
+         :height 70 
+         :angle 0 
+         :player? true
+         :health 50
+         :x-speed 0
+         :y-speed 0
+         :max-speed 4)]
     [background player]))
 
   :on-render
   (fn [screen entities]
     (clear!)
+    (let [player (return-player entities)]
+      (map (fn [entity] 
+                          (move screen entity)) entities))
     (render! screen entities))
 
   :on-key-down
@@ -121,10 +172,11 @@
  
   :on-touch-down 
   (fn [{:keys [input-x input-y button] :as screen} entities]
-   (when (= (button-code :right) button)
+   (if (= button (button-code :right))
      (let [player (return-player entities)
-          mouse-position (get-mouse-position screen input-x input-y)]
-     (move screen player mouse-position)))) 
+           mouse-position (get-mouse-position screen input-x input-y)]
+    (move screen player mouse-position))
+     entities)) 
 
   :on-timer
   (fn [screen entities]
