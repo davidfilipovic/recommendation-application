@@ -1,3 +1,5 @@
+(set! *warn-on-reflection* true)
+
 (ns youllnevergetmealive.core
   (:require [play-clj.core :refer :all]
             [play-clj.g2d :refer :all]
@@ -9,13 +11,14 @@
 (def distance 50)
 (declare youllnevergetmealive main-screen return-player)
 (def start-time (java.util.Date.))
-(def end-time (java.util.Date.))
+
 
 (defn create-enemy
   []
   (let [x (+ (rand-int 700) distance)
         y (+ (rand-int 30) distance)]
-    (assoc (texture "images.jpg") :x x :y y :width 10 :height 10)))
+    (assoc (texture "images.jpg") :x x :y y :width 10 :height 10
+           :health 8)))
 
 
 (defn which-direction
@@ -42,20 +45,31 @@
       (assoc entity :x new-x :y new-y))
     entity))
 
+(defn sort-entities
+  [entities]
+  (sort (fn [e1 e2]
+          (cond
+            (and (:health e1)
+                 (:health e2)
+                 (= (:health e1) 0)
+                 (> (:health e2) 0))
+            -1
+            (and (:health e1)
+                 (:health e2)
+                 (> (:health e1) 0)
+                 (= (:health e2) 0))
+            1
+            (> (:y e1) (:y e2))
+            -1
+            (> (:y e2) (:y e1))
+            1
+            :else
+            0))
+        entities))
+
 
 (defn move-player [entities]
   (map change-player-position entities))
-
-
-;;(defn move
- ;; [{:keys [player?] :as entity} direction]
- ;; (if player?
- ;; (case direction
- ;;   :down (assoc entity :y (- (:y entity) speed))
- ;;   :up (assoc entity :y (+ (:y entity) speed))
- ;;   :right (assoc entity :x (+ (:x entity) speed))
- ;;   :left (assoc entity :x (- (:x entity) speed)))
- ;; entity))
 
 
 (defn return-speed-of-player
@@ -75,6 +89,9 @@
   (input->screen screen input-x input-y))
 
 
+(def end-time (java.util.Date.))
+
+
 (defn calculate-gradient-of-a-line
   [x y x1 y1]
   (let [delta-y (- y1 y)
@@ -88,14 +105,17 @@
                         (:x player) (:y player) (:x mouse-position) (:y mouse-position))))
 
 
+
 (defn get-speed
-  [{:keys [x-speed y-speed max-speed]} mouse-position]
+  [{:keys [x-speed y-speed max-speed]}]
+  (when (and (game :touched?) (button-pressed? :right))
     (let [x (float (- (game :x) (/ (game :width) 2)))
           y (float (- (/ (game :height) 2) (game :y)))
           x-adjust (* max-speed (Math/abs (double (/ x y))))
           y-adjust (* max-speed (Math/abs (double (/ y x))))]
       [(* (Math/signum x) (min max-speed x-adjust))
-       (* (Math/signum y) (min max-speed y-adjust))]))
+       (* (Math/signum y) (min max-speed y-adjust))])))
+
 
 (defn slow-down
   [slow-speed]
@@ -104,20 +124,23 @@
       0
       speed)))
 
+
 (defn move 
-  [{:keys [delta-time]} {:keys [x y health] :as player} mouse-position]
-  (let [[x-speed y-speed] (get-speed player mouse-position)
-        x-difference (* x-speed (- (.getTime end-time) (.getTime start-time)))
-        y-difference (* y-speed (- (.getTime end-time) (.getTime start-time)))] ;(- (.getTime end-time) (.getTime start-time)))]
-       (if (or (not= 0 x-difference) (not= 0 y-difference))
-         (assoc player 
-           :x (+ x x-speed)
-           :y (+ y y-speed)
+  [{:keys [delta-time]}  entities {:keys [x y] :as entity}]
+  (let [[x-speed y-speed] (get-speed entity)
+        x-difference (* x-speed 10)
+        y-difference (* y-speed 11)] ;(- (.getTime end-time) (.getTime start-time)))]
+       (cond
+         (or (not= 0 x-difference) (not= 0 y-difference))
+         (assoc entity 
+           :x (+ x x-difference)
+           :y (+ y y-difference)
            :x-speed (slow-down x-speed)
            :y-speed (slow-down y-speed)
            :x-difference x-difference
            :y-difference y-difference)
-         player)))
+         :else 
+         entity)))
 
 
 (defn move1 [{:keys [x y] :as player} mouse-position]
@@ -137,25 +160,27 @@
     (add-timer! screen :create-enemy 1 2)
   ;; (sound "song.mp3" :play)
     (let [background (texture "space1.jpg")
-          player (assoc (texture "images.jpg")
+          player (assoc (texture "ship2.png")
          :x (float (/ (game :width) 2)) 
          :y (float (/ (game :height) 2))
-         :width 70 
-         :height 70 
+         :width 61 
+         :height 58 
          :angle 0 
          :player? true
          :health 50
          :x-speed 0
          :y-speed 0
-         :max-speed 4)]
+         :max-speed 2)]
     [background player]))
 
   :on-render
   (fn [screen entities]
     (clear!)
     (let [player (return-player entities)]
-      (map (fn [entity] 
-                          (move screen entity)) entities))
+      (->> entities
+        (map (fn [entity] 
+               (->> entity
+                (move screen entities))))))
     (render! screen entities))
 
   :on-key-down
@@ -170,13 +195,13 @@
           mouse-position (get-mouse-position screen input-x input-y)]
       (rotate player mouse-position)))
  
-  :on-touch-down 
+ :on-touch-down 
   (fn [{:keys [input-x input-y button] :as screen} entities]
    (if (= button (button-code :right))
      (let [player (return-player entities)
-           mouse-position (get-mouse-position screen input-x input-y)]
-    (move screen player mouse-position))
-     entities)) 
+         mouse-position (get-mouse-position screen input-x input-y)]
+   (move screen entities player))
+    entities)) 
 
   :on-timer
   (fn [screen entities]
