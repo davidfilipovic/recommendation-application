@@ -1,2 +1,1 @@
-space_game
-==========
+recommendation application in Clojure
