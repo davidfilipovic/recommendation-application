@@ -5,20 +5,21 @@
             [hiccup.middleware :refer [wrap-base-url]]
             [compojure.handler :as handler]
             [compojure.route :as route]
-            [recommendation-application.routes.home :refer [home-routes]]))
+            [recommendation-application.routes.home :refer [home-routes]]
+            [recommendation-application.routes.authentication :refer [authentication-routes]]))
 
 (defn init []
-  (println "recommendation-application is starting"))
+  (println "Recommendation application is starting"))
 
 (defn destroy []
-  (println "recommendation-application is shutting down"))
+  (println "Recommendation application is shutting down"))
 
 (defroutes app-routes
   (route/resources "/")
   (route/not-found "Not Found"))
 
 (def app
-  (-> (routes home-routes app-routes)
+  (-> (routes authentication-routes home-routes app-routes)
       (handler/site)
       (wrap-base-url)))
 

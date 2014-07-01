@@ -3,7 +3,7 @@
             [recommendation-application.views.layout :as layout]))
 
 (defn home []
-  (layout/common [:h1 "Hello Wossrld!"]))
+  (layout/common [:h1 "Hello Wossrsdahgld!"]))
 
 (defroutes home-routes
   (GET "/" [] (home)))

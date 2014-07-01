@@ -4,6 +4,7 @@
 (defn common [& body]
   (html5
     [:head
-     [:title "Welcome to recommendation application"]
+     [:title "Recommendation application"]
+     (include-css "/css/style3.css")
      (include-css "/css/style.css")]
     [:body body]))
