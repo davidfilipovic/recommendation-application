@@ -1,1 +1,1 @@
-recommendation application in Clojure
+Recommendation application in Clojure
