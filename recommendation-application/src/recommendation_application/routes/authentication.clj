@@ -9,35 +9,23 @@
 (defn registration []
   "Register form"
   (layout/common
-    (form-to [:post "/register"]
-             [:h1 "Please provide following information: "]
-             [:table
-              [:tr
-               [:td (label :name "Name:")]]
-              [:tr 
-               [:td (text-field :name)]]
-              [:tr
-               [:td (label :email "E-mail:")]]
-              [:tr 
-               [:td (email-field :email)]]
-              [:tr
-               [:td (label :user-name "User name: ")]]
-              [:tr 
-               [:td (text-field :user-name)]]
-              [:tr
-               [:td (label :password "Password:")]]
-              [:tr 
-               [:td (password-field :password)]]
-              [:tr
-               [:td (label :repeat-password "Repeat password:")]]
-              [:tr 
-               [:td (password-field :repeat-password)]]]
-             [:br]
-             (submit-button "Register")
-             [:br]
-             [:br]
-             [:h2 (link-to {:align "left"} "/" "Log in")])))
-
+    [:div.body]
+      [:div.grad]
+      [:div.header 
+       [:div "Recommendation "
+        [:span "Application"]]]
+    (form-to [:post "/"]
+            (html [:div.login
+               (text-field {:placeholder "name"} :name) 
+               (text-field {:placeholder "e-mail"} :email) 
+               (text-field {:placeholder "user name"} :user-name) 
+               (password-field {:placeholder "password"} :password )
+               (password-field {:placeholder "repeat password"} :repeat-password )
+               [:br]
+               (submit-button "Register")
+               [:br]
+               [:br]
+               (link-to {:align "right"} "/" "Login")]))))
 
 (defn login []
   "Register form"
@@ -47,31 +35,16 @@
       [:div.header 
        [:div "Recommendation "
         [:span "Application"]]]
-     (form-to [:post "/register"]     
+     (form-to [:post "/home"]     
          (html [:div.login
-               (text-field {:placeholder "username"} :name) 
+               (text-field {:placeholder "username"} :user-name) 
                (password-field {:placeholder "password"} :password )
                [:br]
-               (submit-button "Register")]))))
+               (submit-button "Login")
+               [:br]
+               [:br]
+               (link-to {:align "right"} "/register" "Register")]))))
 
-(defn login1 []
-  "Login form"
-  (layout/common
-    (form-to [:post "/"]
-             [:h1 "Log in"]
-             [:table 
-               [:tr
-               [:td (label :user-name "User name: ")]]
-              [:tr 
-               [:td (text-field "user-name")]]
-              [:tr
-               [:td (label :password "Password:")]]
-              [:tr 
-               [:td (password-field "password")]]]
-             [:br]
-             (submit-button "Log in")
-             [:br]
-             [:h2 "If you don't have an account already, please " (link-to {:align "left"} "/register" "Register")])))
 
 (defroutes authentication-routes
   (GET "/register" [] (registration))

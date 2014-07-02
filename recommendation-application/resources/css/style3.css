@@ -57,6 +57,7 @@ body{
 	color: #5379fa !important;
 }
 
+
 .login{
 	position: absolute;
 	top: calc(50% - 75px);
@@ -65,6 +66,15 @@ body{
 	width: 350px;
 	padding: 10px;
 	z-index: 2;
+}
+
+.login a{
+	color: #fff;
+	font-family: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;
+	font-size: 22px;
+	text-decoration: none;
+	position: absolute;
+	right: calc(50% - 82px);
 }
 
 .login input[type=text]{

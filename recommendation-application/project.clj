@@ -8,5 +8,6 @@
                  [compojure "1.1.8"]
                  [hiccup "1.0.5"]
                  [lib-noir "0.8.4"]
-                 [ring-server "0.3.1"]]
+                 [ring-server "0.3.1"]
+                 [org.clojure/java.jdbc "0.3.4"]]
   :main recommendation-application.repl)
