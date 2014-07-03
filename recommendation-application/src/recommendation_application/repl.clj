@@ -1,7 +1,8 @@
 (ns recommendation-application.repl
   (:use recommendation-application.handler
         ring.server.standalone
-        [ring.middleware file-info file]))
+        [ring.middleware file-info file]
+        [recommendation-application.models.database :only [init-db]]))
 
 (defonce server (atom nil))
 
@@ -34,5 +35,6 @@
   (reset! server nil))
 
 (defn -main [& args]
+  (init-db)
   (start-server))
 

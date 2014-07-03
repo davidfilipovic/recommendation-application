@@ -11,6 +11,15 @@ body{
 	font-size: 12px;
 }
 
+h1 {
+	color: black;
+	font: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;
+	font-size:30px;
+	font-weight:normal;
+	margin: 0;
+	padding: 0 0 0 30px;
+}
+
 .body{
 	position: absolute;
 	top: -20px;
@@ -68,6 +77,16 @@ body{
 	z-index: 2;
 }
 
+.registration{
+	position: absolute;
+	top: calc(50% - 157px);
+	left: calc(50% - 182px);
+	height: 150px;
+	width: 350px;
+	padding: 10px;
+	z-index: 2;
+}
+
 .login a{
 	color: #fff;
 	font-family: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;
@@ -88,6 +107,7 @@ body{
 	font-size: 16px;
 	font-weight: 400;
 	padding: 4px;
+	margin-top: 10px;
 }
 
 .login input[type=password]{
@@ -139,6 +159,13 @@ body{
 
 .login input[type=button]:focus{
 	outline: none;
+}
+
+.login .error{
+	color: red;
+	font-size: 16px;
+	margin: 0 0 20px;
+	width: 460px;
 }
 
 ::-webkit-input-placeholder{

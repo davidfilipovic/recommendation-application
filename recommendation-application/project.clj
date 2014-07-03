@@ -9,5 +9,7 @@
                  [hiccup "1.0.5"]
                  [lib-noir "0.8.4"]
                  [ring-server "0.3.1"]
-                 [org.clojure/java.jdbc "0.3.4"]]
+                 [org.clojure/java.jdbc "0.3.4"]
+                 [org.xerial/sqlite-jdbc "3.7.2"]
+                 [com.novemberain/monger "2.0.0"]]
   :main recommendation-application.repl)

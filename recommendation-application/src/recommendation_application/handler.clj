@@ -6,7 +6,8 @@
             [compojure.handler :as handler]
             [compojure.route :as route]
             [recommendation-application.routes.home :refer [home-routes]]
-            [recommendation-application.routes.authentication :refer [authentication-routes]]))
+            [recommendation-application.routes.authentication :refer [authentication-routes]]
+            [noir.util.middleware :as noir-middleware]))
 
 (defn init []
   (println "Recommendation application is starting"))
@@ -19,7 +20,5 @@
   (route/not-found "Not Found"))
 
 (def app
-  (-> (routes authentication-routes home-routes app-routes)
-      (handler/site)
-      (wrap-base-url)))
+  (noir-middleware/app-handler [authentication-routes home-routes app-routes]))
 
