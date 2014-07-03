@@ -31,7 +31,7 @@
                [:br]
                (link-to "/" "Login")]])))
 
-(defn login [& message]
+(defn login []
   "Login form"
    (layout/common 
      [:div.body]

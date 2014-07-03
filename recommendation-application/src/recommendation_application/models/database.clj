@@ -21,7 +21,7 @@
   (mc/insert-and-return "users" {:name name :email email :username username :password password }))
 
 (defn username-exists? [username]
-  (nil? (mc/find-one-as-map db "users" {:username username})))
+  (nil? (mc/find-maps db "users" {:username username})))
 
 (defn get-password-by-username [username]
   (mc/find-one-as-map db "users" {:username username}))
