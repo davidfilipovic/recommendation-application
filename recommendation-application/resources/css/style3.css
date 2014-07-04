@@ -162,8 +162,8 @@ h1 {
 }
 
 .login .error{
-	color: red;
-	font-size: 16px;
+	color: #E3121B;
+	font-size: 17px;
 	margin: 0 0 20px;
 	width: 460px;
 }
