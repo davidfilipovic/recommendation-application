@@ -7,21 +7,3 @@
  (:use [hickory.core]))
 
 
-(def site-htree (-> (client/get "http://formula1.com/default.html") :body parse as-hickory))
-
-(def site-ratings (-> (client/get "http://formula1.com/default.html") :body parse as-hickory))
-
-(def t (-> (s/select (s/child (s/class "subCalender") ; sic
-                                    (s/tag :div) 
-                              (s/id :raceDates) 
-                              s/first-child
-                              (s/tag :b)) 
-                     site-htree) 
-           first  :content
-          first string/trim))
-
-(defn get-json 
-  [link]
-     (slurp (str "http://www.w3.org/2012/pyMicrodata/extract?format=json&uri=" link)))
-
-

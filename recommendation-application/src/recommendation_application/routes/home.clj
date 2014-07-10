@@ -10,38 +10,43 @@
             [clojure.string :as string]
             [clojure.data.json :as json]
             [clj-http.client :as client]))
-
- (defn r [l] (let [content (s/select (s/child (s/class "bookTitle"))
-                                  (as-hickory (parse (slurp l))))]
-            (map #(str "http://www.goodreads.com" %)
-                 (map :href
-                     (map :attrs content)))))
  
- (defn get-json 
-  [link]
-     (slurp (str "http://www.w3.org/2012/pyMicrodata/extract?format=json&uri=" link)))
 
- (defn prepare-json 
-  "Prepare json for further data extraction."
-  [body]
-  (json/read-str
-    (string/replace
-      (string/replace body "@" "") "http://schema.org/" "")
-    :key-fn keyword))
+(def site-htree
+  "Parse every page with links into map"
+   (for [i (range 26)]
+     (->
+       (client/get 
+         (str "http://www.metacritic.com/browse/games/genre/date/strategy/pc?view=condensed&page=" i))
+       :body parse as-hickory)))
 
-(defn get-book-data 
-  "Get section from json that contains book data."
-  [json-text] 
-  (second (:list (:md:item json-text))))
+(def get-link-for-every-game
+  "Get every link from every page"
+  (atom (pmap (fn [link]
+                (let [content (s/select 
+                                (s/child 
+                                  (s/class "product_title"))
+                                link)]
+                  (map #(str "http://www.metacritic.com/game/pc" %)    
+                       (map :href
+                            (map :attrs
+                                 (map #(get % 1)
+                                      (map :content content)))))))
+              site-htree)))
 
 (defn home []
   (layout/common 
-    [:h1 (str "Hello " (session/flash-get :username))]
-    [:h1 (str "Hellssso " (session/flash-get :name))]
-    [:h1 (link-to "/logout" "Logout")]
-   ; [:h1 (r "http://www.goodreads.com/shelf/show/programming?page=1")]
-    [:h1  (get-json "http://www.goodreads.com/book/show/4099.The_Pragmatic_Programmer")]))
-
+   [:h1 (str "Hello " (session/flash-get :username))]
+   [:h1 (str "Hellssso " (session/flash-get :name))]
+   [:h1 (link-to "/logout" "Logout")]
+   (second @get-link-for-every-game)
+  ; (first site-htree)
+   [:br]
+   [:br]
+   ))
+  
 (defroutes home-routes
   (GET "/home" [] (home))
   (GET "/logout" [] (logout)))
+
+
