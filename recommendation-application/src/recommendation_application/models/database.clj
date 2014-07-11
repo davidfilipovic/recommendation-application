@@ -12,7 +12,8 @@
 
 (defn init-db []
    connection
-   (insert-admin))
+  ; (insert-admin)
+   )
 
 (defn create-new-user [name email username password]
   (mc/insert db "users" {:_id (ObjectId.) :name name :email email :username username :password password }))
