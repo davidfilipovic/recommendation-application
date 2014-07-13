@@ -20,9 +20,6 @@
        :body hickory/parse hickory/as-hickory))
 
 
-
-
-
 (defn reviews [link]
   "Parse every page with links into map"
      (->
@@ -33,20 +30,14 @@
            (s/id "game_area_metascore"))
          (get-page link))))
 
+(defn hickory-parser 
+  "For given link and class, get map"
+  [link class]
+  (->(s/select 
+         (s/child 
+           (s/class class))
+             (get-page link))))  
 
-                    
-(defn get-ratings
-  "Extract ratings from specified page"
-  [game-page]
-    (let [content (s/select 
-                     (s/child 
-                         (s/class "block_content_inner")
-                         (s/tag :div) 
-                         (s/id :game_area_metascore))
-                      (-> 
-                        (client/get game-page)
-                        :body parse as-hickory))]
-      content))
 
 (defn get-json 
   "Extract part of the site from the link, in json format."
@@ -59,23 +50,13 @@
 
 (defn get-user-reviews
   [link]
-  (get-specified-part link "//div[@id=Reviewsall0]"))
+  (get-json link "//div[@id=Reviewsall0]"))
 
 ;(get-json "http://store.steampowered.com/app/730/?snr=1_7_7_230_150_1" 
  ;               "//div[@id=game_area_description]" 
   ;              "//div[@id=game_area_sys_req]"
    ;             "//div[@id=Reviewsall0]" "//div[@id=game_area_metascore]")
-
-  
-(defn hickory-parser 
-  "For given link and class, get map"
-  [link class]
-  (let [content 
-        (s/select 
-         (s/child 
-           (s/class class))
-             (get-page link))]
-    content))   
+ 
    
 (defn get-link-for-picture
   "For given game link, return picture"
@@ -84,18 +65,29 @@
     (second 
       (map :href 
            (second  
-             (second (get
-                       (first content) :content)))))))
+             (second (get (first content) :content)))))))
 
 (defn get-logo [link]
-  (let [content (s/select 
-                  (s/child 
-                       (s/class "screenshot_holder"))
-                     (get-page link))]))
+  "Get game logo"
+  (let [content (hickory-parser link "game_header_image_ctn")]
+   (second 
+     (map :src
+          (map :attrs
+               (get (first content) :content))))))
    
-(defn get-game []
+(defn get-game-score
+  [link]
+  "Get score for the game"
+   (let [content (get-json link "//div[@id=game_area_metascore]")]
+   (apply str 
+          (take 2 
+                (filter #(string? %)
+                        (map #(re-matches #"[0-9]" (str %)) content))))))
+
+(defn get-game 
+  [link]
   "Retreive game and prepare it for saving"
-  )
+  (let [about-game-and-reviews]))
    
 
 
@@ -111,12 +103,14 @@
        [:br]
        [:br]
       ;(first (reviews "http://store.steampowered.com/app/440/?snr=1_7_7_230_150_1"))
-      (json/pprint (get-one-picture "http://store.steampowered.com/app/570/?snr=1_7_7_230_150_1"))
+      ;;(json/pprint (get-link-for-picture "http://store.steampowered.com/app/570/?snr=1_7_7_230_150_1"))
       ;(json/pprint (get-logo "http://store.steampowered.com/app/570/?snr=1_7_7_230_150_1"))
+      ;(json/pprint (hickory-parser "http://store.steampowered.com/app/570/?snr=1_7_7_230_150_1" "screenshot_holder"))
+      (json/pprint (get-game-score "http://store.steampowered.com/app/440/?snr=1_7_7_230_150_1"))
 ))
         
 (defroutes home-routes
   (GET "/home" [] (home))
-        (GET "/logout" [] (logout)))
+  (GET "/logout" [] (logout)))
 
-
+ 
