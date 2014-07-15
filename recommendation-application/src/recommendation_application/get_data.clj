@@ -13,10 +13,17 @@
             [clojure.data.json :as json]
             [clj-http.client :as client]))
  
-(defn get-json 
-  "Extract part of the site from the link, in json format."
-  [link & part]
-     (slurp (str "http://webscrapemaster.com/api/?url=" link "&xpath=" (first part) "," (second part))))
+(def site-htree
+  "Parse every page with links into map"
+   (for [i (range 26)]
+     (->
+     (client/get 
+       (s/select 
+         (s/child 
+           (s/class "product_title"))
+         (str "http://www.metacritic.com/browse/games/genre/date/strategy/pc?view=condensed&page=" i))) 
+     :body parse as-hickory)))
+
 
 (defn get-game-score
   [link]
@@ -33,17 +40,6 @@
        (client/get link)
        :body hickory/parse hickory/as-hickory))
 
-
-(defn reviews [link]
-  "Parse every page with links into map"
-     (->
-       (s/select 
-         (s/child 
-           (s/class "block_content_inner")
-           (s/tag :div) 
-           (s/id "game_area_metascore"))
-         (get-page link))))
-
 (defn hickory-parser 
   "For given link and class, get map"
   [link class]
@@ -52,51 +48,20 @@
            (s/class class))
              (get-page link))))  
 
-
-(defn get-specified-part
-  [link part]
-  (get-json link part))
-
-(defn get-user-reviews
-  [link]
-  (get-json link "//div[@id=Reviewsall0]"))
-   
-(defn get-link-for-picture
-  "For given game link, return picture"
-  [link]
-  (let [content (hickory-parser link "screenshot_holder")]
-    (second 
-      (map :href 
-           (second  
-             (second (get (first content) :content)))))))
-
-(defn get-logo [link]
-  "Get game logo"
-  (let [content (hickory-parser link "game_header_image_ctn" "")]
-   (second 
-     (map :src
-          (map :attrs
-               (get (first content) :content))))))
-
-
-(defn get-about-game
-  [link]
-  (let [content (hickory-parser link "game_area_description")]
-    content))
-
 (defn hickory-parser-desc
   "For given link and class, get map"
-  [link class1 class]
+  [link sub-class class]
   (->(s/select 
        (s/descendant
-           (s/class class1)
+           (s/class sub-class)
            (s/class class))
              (get-page link))))  
 
 (defn get-critics-reviews-link 
   [link]
   (let [content (hickory-parser-desc link "nav_critic_reviews" "action")]
- (map :href (map :attrs content))))
+    (map :href
+         (map :attrs content))))
 
 (defn get-all-critics-data 
   "Get all informations about critics"
@@ -125,14 +90,38 @@
                    (assoc {} :name (first name) :score (first score) :body (first body) :date (first date))) 
              (rest score) (rest name) (rest body) (rest date)))))
 
+(defn get-game-score [link]
+	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
+	    (get 
+       (second 
+         (first 
+           (map :content content))) :content)))
+
+(defn get-game-name [link]
+  (let [content
+        (s/select 
+          (s/child 
+            (s/tag :head)
+            (s/tag :title))
+          (get-page link))]
+    (string/replace (first (map :content content)) " for PC Reviews - Metacritic" "")))
+
+(defn get-picture-link [link]
+  (let [content (hickory-parser link "large_image")]
+    (get (get (second 
+                (get (first content) :content)) :attrs) :src)))
+
+(defn get-sumary-details [link]
+  (let [content (hickory-parser-desc link "product_summary" "data")]
+    (get (second (flatten (map :content content))) :content)))
+
 (defn get-game 
   [link]
   "Retreive game and prepare it for saving"
   (let [game 
         (assoc {} 
-               :name "SH"
+               :name (get-game-name link)
                :score (get-game-score link)
-               :logo (get-logo link)
                :picture (get-link-for-picture link))]
     (save-game game)))
 
@@ -148,12 +137,11 @@
         ;(submit-button "Search"))  
         ;(json/pprint (get-reviews-link "http://www.metacritic.com/game/pc/half-life-2"))
         ;(json/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/half-life-2/critic-reviews")))
-        (json/pprint (get-critics-reviews-link "http://www.metacritic.com/game/pc/divekick"))
+        (json/pprint (get-sumary-details "http://www.metacritic.com/game/pc/divekick"))
        ))
  ([name]
   (layout/common 
  [:h1(:score (get-game-by-name name))])))
-
 
 
 
