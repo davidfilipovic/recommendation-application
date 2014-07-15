@@ -2,7 +2,7 @@
   (:use recommendation-application.handler
         ring.server.standalone
         [ring.middleware file-info file]
-        [recommendation-application.models.database :only [init-db]])
+        [recommendation-application.models.database :only [init-db empty-db]])
   (:require [clojure.data.json :as json]))
 
 (defonce server (atom nil))
@@ -38,4 +38,3 @@
 (defn -main [& args]
   (init-db)
   (start-server))
-

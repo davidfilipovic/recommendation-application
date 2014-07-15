@@ -10,10 +10,14 @@
 (defn insert-admin []
   (mc/insert db "users" {:_id (ObjectId.) :name "David" :email "david.1990@ymail.com" :username "admin" :password "admin"}))
 
+(defn empty-db [table]
+  (mc/remove db table))
+
 (defn init-db []
    connection
-  ; (insert-admin)
-   )
+  ; (empty-db)
+ ; (insert-admin)
+ )
 
 (defn create-new-user [name email username password]
   (mc/insert db "users" {:_id (ObjectId.) :name name :email email :username username :password password }))
@@ -31,3 +35,16 @@
 
 (defn get-users []
   (mc/find-maps db "users"))
+
+(defn save-game
+  [game]
+  (mc/insert db "games" game))
+
+(defn get-game-by-name [name]
+ (mc/find-one-as-map db "games" {:name name}))
+
+(defn get-all [table]
+  (mc/find-maps db table))
+
+(defn get-by-score [table]
+  (mc/distinct db table "score"))
