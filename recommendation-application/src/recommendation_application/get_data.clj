@@ -84,37 +84,6 @@
   (let [content (hickory-parser link "game_area_description")]
     content))
 
-(defn get-game 
-  [link]
-  "Retreive game and prepare it for saving"
-  (let [game 
-        (assoc {} 
-               :name "SH"
-               :score (get-game-score link)
-               :logo (get-logo link)
-               :picture (get-link-for-picture link))]
-    (save-game game)))
-
-
-(defn get-critics-reviews-link 
-  [link]
-  (let [content (hickory-parser link "see_all")]
-  (first (map :href (map :attrs (get (first content) :content))))))
-
-
-
-(defn- get-user-rating 
-  "Extract user rating from page-link."
-  [page-link]
-  (let [content (s/select (s/child (s/class "desktop")
-                                   (s/tag :head)
-                                   (s/attr :itemprop #(= % "ratingValue")))
-                          (hickory/as-hickory (hickory/parse (slurp page-link))))]
-    (first (map :content (map :attrs content)))))
-
-(defn get-score [content]
-  (map :content content))
-
 (defn hickory-parser-desc
   "For given link and class, get map"
   [link class1 class]
@@ -124,6 +93,10 @@
            (s/class class))
              (get-page link))))  
 
+(defn get-critics-reviews-link 
+  [link]
+  (let [content (hickory-parser-desc link "nav_critic_reviews" "action")]
+ (map :href (map :attrs content))))
 
 (defn get-all-critics-data 
   "Get all informations about critics"
@@ -152,6 +125,17 @@
                    (assoc {} :name (first name) :score (first score) :body (first body) :date (first date))) 
              (rest score) (rest name) (rest body) (rest date)))))
 
+(defn get-game 
+  [link]
+  "Retreive game and prepare it for saving"
+  (let [game 
+        (assoc {} 
+               :name "SH"
+               :score (get-game-score link)
+               :logo (get-logo link)
+               :picture (get-link-for-picture link))]
+    (save-game game)))
+
 (defn home-page 
  ([]
   (layout/common 
@@ -164,7 +148,7 @@
         ;(submit-button "Search"))  
         ;(json/pprint (get-reviews-link "http://www.metacritic.com/game/pc/half-life-2"))
         ;(json/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/half-life-2/critic-reviews")))
-        
+        (json/pprint (get-critics-reviews-link "http://www.metacritic.com/game/pc/divekick"))
        ))
  ([name]
   (layout/common 
