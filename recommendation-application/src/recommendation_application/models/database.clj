@@ -1,4 +1,5 @@
 (ns recommendation-application.models.database
+   (:use somnium.congomongo)
  (:require [monger.core :as mg]
            [monger.collection :as mc])
  (:import (org.bson.types ObjectId)))
@@ -45,6 +46,24 @@
 
 (defn get-all [table]
   (mc/find-maps db table))
+
+(defn- next-seq [coll]
+  "Generate :_id." 
+  (:seq (fetch-and-modify :sequences {:_id coll} {:$inc {:seq 1}}
+                          :return-new? true :upsert? true)))
+
+(defn- insert-with-id [coll values]
+  (insert! coll (assoc values :_id (next-seq coll))))
+
+
+(defn insert-game [game]
+  (insert-with-id :games game))
+
+(defn drop-all-data [] 
+  (mc/remove db "games"))
+
+(defn get-all-games []
+  (mc/find-maps db "games"))
 
 (defn get-by-score [table]
   (mc/distinct db table "score"))
