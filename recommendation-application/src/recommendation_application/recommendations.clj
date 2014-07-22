@@ -1,64 +1,50 @@
 (ns recommendation-application.recommendations
-  (:use [recommendation-application.models.database 
-         :only [get-all-games]]))
+  (:use [recommendation-application.get-data :only [shared-critics game-critics]]))
 
+(defn sum [x] (reduce + 0 x))
 
-(defn game-critics []
-  (apply merge {}
-       (for [game (get-all-games)] 
-         (assoc {} (:name game) 
-                (into {} (for [critic (:critics game)]
-                           (assoc {} (:name critic) (read-string (:score critic)))))))))
+(defn expt [x n]
+  (reduce * (repeat n x)))
 
-(def cla  {"Gamezilla!" 100,
-  "Yahoo! Games" 100,
-  "Computer Gaming World" 100,
-  "All Game Guide" 80,
-  "Adrenaline Vault" 100,
-  "PC Gameworld" 86,
-  "PC Gamer" 90,
-  "GameSpot" 96,
-  "Game Revolution" 100,
-  "Computer Games Magazine" 80,
-  "Just Adventure" 100,
-  "Electric Playground" 85})
+(defn pearson-correlation 
+  [data first-critic second-critic]
+  (let [shared-games (shared-critics data first-critic second-critic)
+        size (count shared-games)]
+    (if (zero? size)
+      0
+      (let [first-ratings (for [[crit sco] shared-games]
+                            (first sco))
+            second-ratings (for [[crit sco] shared-games]
+                             (second sco))
+            first-sum (sum first-ratings)
+            second-sum (sum second-ratings)
+            first-square-sum (sum (map #(expt % 2) first-ratings))
+            second-square-sum (sum (map #(expt % 2) second-ratings))
+            product-sum (sum (map * first-ratings second-ratings))
+            numerator (- product-sum (/ (* first-sum second-sum) size))
+            first-factor (- first-square-sum (/ (expt first-sum 2) size))
+            second-factor (- second-square-sum (/ (expt second-sum 2) size))
+            denominator (Math/sqrt (* first-factor second-factor))]
+        (if (zero? denominator)
+          0
+          (/ numerator denominator))))))
 
-(def pu {"Total Video Games" 90,
-  "Yahoo! Games" 90,
-  "Game Informer" 93,
-  "PC Format" 90,
-  "Media and Games Online Network" 89,
-  "PGNx Media" 91,
-  "Gamer's Pulse" 88,
-  "Computer Gaming World" 70,
-  "Computer Games Online RO" 90,
-  "Four Fat Chicks" 100,
-  "GameSpy" 91,
-  "Armchair Empire" 80,
-  "All Game Guide" 80,
-  "Adrenaline Vault" 80,
-  "IGN" 92,
-  "Game Over Online" 90,
-  "PC Gameworld" 93,
-  "PC Gamer" 91,
-  "GameSpot" 93,
-  "G4 TV" 80,
-  "AtomicGamer" 90,
-  "Game Revolution" 91,
-  "netjak" 82,
-  "Gamers' Temple" 92,
-  "ActionTrip" 79,
-  "GameZone" 93,
-  "GamerWeb PC" 91})
+(defn top-matches-for-user 
+  "Get the top matches for a critic."
+  [data first-critic]
+  (for [second-critic (filter #(not= first-critic %) (keys data))]   
+    [(pearson-correlation data first-critic second-critic) second-critic]))
 
-(defn shared-critics [first-critics second-critics]
- (apply merge {}
-      (for [k (keys first-critics)
-                        :when (contains? second-critics k)]
-                    (assoc {} k [(first-critics k) (second-critics k)]))))
+(defn top-matches
+  "Returns a ranked list of the most similar critics."
+  ([data critic n]
+    (let [matches (top-matches-for-user data critic)]
+      (take n (sort-by first > matches)))))
 
-
-
-(defn pearson-correlation [prefs1 prefs2]
-  (let [shared-games (shared-critics prefs1 prefs2) ])
-  )
+(defn recommend-games-for-game [game-name]
+  (let [games-names (keys (game-critics))
+        other-games (filter #(not= game-name %) games-names)
+        similar-games (pmap #(pearson-correlation (game-critics) game-name %) other-games)
+        final-map (zipmap other-games similar-games)]
+   (sort-by val > (into {} (filter (fn [[key value]] (if (< 0 value)
+                                               (dissoc final-map key))) final-map)))))
