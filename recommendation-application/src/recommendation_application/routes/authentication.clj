@@ -12,7 +12,7 @@
 (defn registration []
   "Register form"
   (layout/common
-    [:div.body]
+    [:div.body-l]
     [:div.grad]
     [:div.header 
     [:div "Recommendation "
@@ -35,7 +35,7 @@
 (defn login []
   "Login form"
    (layout/common 
-     [:div.body]
+     [:div.body-l]
      [:div.grad]
      [:div.header 
      [:div "Recommendation "

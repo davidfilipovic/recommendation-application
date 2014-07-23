@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Exo:100,200,400);
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:700,400,300);
 
-body{
+body-l{
 	margin: 0;
 	padding: 0;
 	background: #fff;
@@ -20,7 +20,7 @@ h1 {
 	padding: 0 0 0 30px;
 }
 
-.body{
+.body-l{
 	position: absolute;
 	top: -20px;
 	left: -20px;
@@ -28,13 +28,13 @@ h1 {
 	bottom: -40px;
 	width: auto;
 	height: auto;
-	background-image: url(../images/city.jpg);
+	background-image: url(../images/lich.jpg);
 	background-size: cover;
 	-webkit-filter: blur(5px);
 	z-index: 0;
 }
 
-.body h1 {
+.body-l h1 {
 	color: #e91391;
 	font-size:30px;
 	font-weight:normal;
@@ -175,7 +175,6 @@ h1 {
 	margin: 0 0 20px;
 	width: 460px;
 }
-
 
 .game {
 	color: black;

@@ -1,6 +1,6 @@
 (ns recommendation-application.views.index-page)
 
-(defn- home-page []
+(defn- home-page2 []
   (layout/common 
         [:h1 (str "Hello " (session/flash-get :username))]
         [:h1 (str "Hellssso " (session/flash-get :name))]
