@@ -82,6 +82,10 @@ th{border-top:5px solid #555; color:#fff; padding:10px; text-transform:uppercase
 td{padding:10px;}
 td, th{border-bottom:1px solid #1f1f1f;}
 
+table-game{border-collapse:separate; border-spacing:0; border-top:1px solid white; margin-bottom:28px; width:100px; text-align:left;}
+
+table-game .td {padding:10px; border-bottom:1px solid #1f1f1f;}
+table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-color:#49494b;}
 /* INFO BOXES ------------------------------------------------------------*/
 
 .info, .success, .warning, .error, .validation{border:1px solid; margin:10px 0; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;}
@@ -189,7 +193,6 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	-o-transform:rotate(90deg);
 }
 .shadow-divider1{
-	
 	background:url("../images/sprites.png") no-repeat 0 416px;
 	margin-top:20px;
 	float: right;
@@ -199,7 +202,8 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 .bullet-title{
 	background:url("../images/sprites.png") no-repeat 0 -815px;
 	padding-left:40px;
-	margin-bottom:20px;
+	margin-bottom:10px;
+	padding-bottom: 1px;
 }
 .bullet-title .big{
 	color:#49494b;
@@ -208,8 +212,10 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 }
 .bullet-title .small{
 	color:#999; 
+	margin-top:2px;
 	font-size:16px;
 	line-height:0.4em;
+	padding-left: 1px;
 }
 
 /* REVIEWS ------------------------------------------------------------*/
@@ -232,18 +238,16 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	color:#666;
     font-size:14px;
 	font-weight:bold;
-	text-decoration:none;
+	text-decoration:none;		
 }
 .critic-date{
 	color:#adadad;
 	font-size:12px; 
 	text-align:right;
 }
-
 .critic-date span{
 	float:left; 
 }
-
 .critic-game-score{
 	background-color: #D15A04;
 	height: 28px;
@@ -254,15 +258,31 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	line-height: 28px;
 	padding-right: 1px;
 	text-align: center;
-	
+}
+
+.critic-game-score .main{
+	background-color: #D15A04;
+	height: 60px;
+	width: 80px;
+	font-size: 30px;
+	text-color: white;
+	color: #fff;
+	//line-height: 28px;
+	padding-right: 1px;
+	 line-height: 60px;
+	//text-align: center;
 }
 
 /* HOME BLOCKS ------------------------------------------------------------*/
 
 .blocks-holder{
 	overflow:hidden;
- 	width:640px;
+ 	width:300px;
  	display:block;
+ 	float: left;
+ 	padding-left: 0px;
+ 	margin-top: 12px;
+ 	margin-bottom: 12px;
 }
 .blocks-holder li{
 	display:block;
@@ -270,7 +290,29 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	width:120px;
 	position:relative;
 	margin-bottom:10px;
-	margin-right:10px;
+	margin-right:0px;
+}
+.block-data{
+	width:100px;
+	height:30px;
+	text-align: left;
+}
+.block-data-h{
+	width:100px;
+	height:30px;
+	text-align: left;
+	margin-top: 30px;
+}
+.pub-name{
+	color:#666;
+    font-size:14px;
+	font-weight:bold;
+	width: 100px;
+	text-decoration:none;
+	margin-top: 2px;
+ 	margin-bottom: 12px;
+ 	margin-left: 310px;
+ 	padding-top: 12px;
 }
 .blocks-holder li images{border:1px solid gray;}
 .blocks-holder .block-ribbon{position:absolute; right:-7px; top:40px; overflow:hidden; height:86px;}
