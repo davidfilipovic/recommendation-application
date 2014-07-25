@@ -15,16 +15,7 @@ h4{font-size:24px;}
 h5{font-size:22px;}
 h6{font-size:20px;}
 h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
-.headline{
-	margin:30px 0; 
-	font-size:24px; 
-	text-align:center;
-}
-.headline-h{
-	margin:20px 0; 
-	font-size:20px; 
-	text-align:center;
-}
+.headline{margin:20px 0; font-size:24px; text-align:center;}
 #header #main, #footer, #bottom{width:100%;}
 #header{height:134px; background:#e5e3dc url("../images/bgs/webtreats/webtreats_blue_creme_pattern_87.jpg"); border-bottom:1px solid #fff;}
 #home-header{height:203px; background:#e5e3dc url("../images/bgs/webtreats/webtreats_blue_creme_pattern_87.jpg"); border-bottom:1px solid #fff;}
@@ -185,31 +176,6 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	margin:0 10px 0 20px;
 	float:left;
 }
-#front-left-down-col{
-	width:120px;
-	margin:0 0px 0 0px;
-	height: 150px;
-	padding: 0 20px;
-    position: relative;
-    
-}
-#front-left-down-col .img{
-	position: relative;
-	background: #fff;
-	
-}
-.thumb-d {
-	padding: 7px;
-	width: 112px;
-	height: 159;
-	position: top;
-}
-.thumb{
-	width: 112px;
-	height: 159;
-	padding-right: 15px;
-	margin-right: 15px;
-}
 .front-right-col{
 	width:34.3%;
     margin:0 0 0 10px;
@@ -316,7 +282,7 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
  	float: left;
  	padding-left: 0px;
  	margin-top: 12px;
- 	margin-bottom: 16px;
+ 	margin-bottom: 12px;
 }
 .blocks-holder li{
 	display:block;
@@ -330,14 +296,12 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	width:100px;
 	height:30px;
 	text-align: left;
-	margin-left:10px;
 }
 .block-data-h{
 	width:100px;
 	height:30px;
 	text-align: left;
 	margin-top: 30px;
-	margin-left:10px;
 }
 .pub-name{
 	color:#666;

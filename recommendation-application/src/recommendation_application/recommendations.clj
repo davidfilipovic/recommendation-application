@@ -41,7 +41,8 @@
     (let [matches (top-matches-for-user data critic)]
       (take n (sort-by first > matches)))))
 
-(defn recommend-games-for-game [game-name]
+(defn recommend-games-for-game 
+  [game-name]
   (let [games-names (keys (game-critics))
         other-games (filter #(not= game-name %) games-names)
         similar-games (pmap #(pearson-correlation (game-critics) game-name %) other-games)

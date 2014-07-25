@@ -1,5 +1,7 @@
 (ns recommendation-application.get-data
-  (:use [recommendation-application.models.database :only [save-game empty-db get-game-by-name get-all get-all-games get-by-score drop-all-data]])
+  (:use [recommendation-application.models.database :only [save-game empty-db get-game-by-name get-all get-all-games get-by-score drop-all-data]]
+       ; [recommendation-application.recommendations :only [recommend-games-for-game]]
+       )
   (:require [compojure.core :refer :all]
             [hiccup.form :refer [form-to label text-field radio-button password-field submit-button email-field]]
             [hickory.core :as hickory]
@@ -195,7 +197,7 @@
       ; (clojure.pprint/pprint  (drop-last 6 (first @get-link-for-every-game)))
      ;(get-url "http://www.metacritic.com/game/pc/spider-man-the-movie")   ;   (t)
  
-    ;(clojure.pprint/pprint (recommend-games-for-game "Diablo"))
+   ; (clojure.pprint/pprint (recommend-games-for-game "Diablo"))
      ;(clojure.pprint/pprint (pearson-correlation lisa gene))
      
     ; (clojure.pprint/pprint (shared-critics critics "Toby" "Gene Seymour"))
