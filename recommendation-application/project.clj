@@ -14,5 +14,6 @@
                  [clj-http "0.9.2"]
                  [org.clojure/data.json "0.2.5"]
                  [clojure-soup "0.0.1"]
-                 [clj-soup/clojure-soup "0.1.1"]]
+                 [clj-soup/clojure-soup "0.1.1"]
+                 [clj-time "0.7.0"]]
   :main recommendation-application.repl)

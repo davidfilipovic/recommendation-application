@@ -2,8 +2,11 @@
   (:use recommendation-application.handler
         ring.server.standalone
         [ring.middleware file-info file]
-        [recommendation-application.models.database :only [init-db empty-db]])
-  (:require [clojure.data.json :as json]))
+        [recommendation-application.models.database :only [init-db empty-db]]
+     ;    [mongo-session.core :only [mongo-session]]
+     )
+  (:require [clojure.data.json :as json]
+             [noir.session :as session]))
 
 (defonce server (atom nil))
 
@@ -15,6 +18,7 @@
   (-> #'app
     ; Makes static assets in $PROJECT_DIR/resources/public/ available.
     (wrap-file "resources")
+    ;(session/wrap-noir-session {:store (mongo-session :sessions)}) ;;;;;;
     ; Content-Type, Content-Length, and Last Modified headers for files in body
     (wrap-file-info)))
 
