@@ -56,4 +56,4 @@
   (mc/distinct db table "score"))
 
 (defn update-game [game new-critic]
- ( mc/update db "games" game new-critic {:multi true}))
+ ( mc/update db "games" game new-critic {:multi false}))

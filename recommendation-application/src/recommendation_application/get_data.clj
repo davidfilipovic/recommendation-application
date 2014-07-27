@@ -1,6 +1,7 @@
 (ns recommendation-application.get-data
   (:use [recommendation-application.models.database :only [save-game empty-db get-game-by-name get-all get-all-games get-by-score drop-all-data]]
        ; [recommendation-application.recommendations :only [recommend-games-for-game]]
+       ;[recommendation-application.routes.home :only [date-form]]
        )
   (:require [compojure.core :refer :all]
             [hiccup.form :refer [form-to label text-field radio-button password-field submit-button email-field]]
@@ -53,11 +54,11 @@
         critic-score (hickory-parser-desc link "main_col" "indiv")
         critic-body (hickory-parser-desc link "main_col" "review_body")
         critic-date (hickory-parser-desc link "main_col" "date")]
-  (assoc {}
-         :name (flatten (map :content (flatten (map :content critic-name))))
-         :score (flatten (map :content critic-score))
-         :body (flatten (map :content critic-body))
-         :date (flatten (map :content critic-date)))))
+    (assoc {}
+        :name (flatten (map :content (flatten (map :content critic-name))))
+        :score (map read-string (flatten (map :content critic-score)))
+        :body (flatten (map :content critic-body))
+        :date (flatten (map :content critic-date)))))
         
 (defn prepare-critics
   "Get map with critics, and prepare them for saving"
@@ -70,15 +71,19 @@
     (if (empty? score)
       acc
       (recur (conj acc
-                   (assoc {} :name (first name) :score (first score) :body (first body) :date (first date))) 
+                   (assoc {} 
+                          :name (first name) 
+                          :score (int (/ (first score) 20))
+                          :body (first body) 
+                          :date (first date))) 
              (rest score) (rest name) (rest body) (rest date)))))
 
 (defn get-game-score [link]
 	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
-	    (get 
-       (second 
-         (first 
-           (map :content content))) :content)))
+	    (first (map read-string (get 
+                               (second 
+                                 (first 
+                                   (map :content content))) :content)))))
 
 (defn get-game-name [link]
   (let [content
@@ -177,6 +182,38 @@
                         :when (contains? second-critic k)]
                     (assoc {} k [(first-critic k) (second-critic k)])))))
 
+
+
+(def diablo {:_id "#<ObjectId 3saasds1aasdasdsdasd2>",
+    :critics
+    [{:date "Nov 23, 2013",
+      :body
+      "Hands-down, th",
+      :score "100",
+      :name "Gamezilla!"}
+     {:date "Nov 14, 2013",
+      :body
+      "Deamers and RPG-ers alike will be enthralled. ",
+      :score "80",
+      :name "Computer Games Magazine"}
+     {:date "Nov 12, 2013",
+      :body
+      "Deamers and RPG-ers alike will be enthralled. ",
+      :score "80",
+      :name "Computer Games Magazine"}
+     {:date "Nov 16, 2013",
+      :body
+      "Deamers and RPG-ers alike will be enthralled. ",
+      :score "80",
+      :name "Computer Games Magazine"}
+     {:date "Nov 1, 2013",
+      :body
+      "Deamers and RPG-ers alike will be enthralled. ",
+      :score "80",
+      :name "Computer Games Magazine"}]
+    :score ["94"],
+    :name "Diablo4"})
+
 (defn home-page []
   (layout/common 
     [:h1 (str "Hello " (session/flash-get :username))]
@@ -204,7 +241,12 @@
     
      ;(clojure.pprint/pprint (shared-critics cla pu))
     
+     (clojure.pprint/pprint 
+      (prepare-critics 
+       (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))
     
+     ;(save-game diablo)
+      
      ;(clojure.pprint/pprint (game-critics))
      ;     
      ;(take 10 
@@ -213,7 +255,7 @@
      ;(clojure.pprint/pprint (dorun
      ;                       (take 10 (first @get-link-for-every-game))
      ; (get-page "http://www.metacritic.com/game/pc/taito-legends")
-       
+       ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/half-life-2"))
      ;
      ;(clojure.pprint/pprint
      ;(get-all "games")

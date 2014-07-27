@@ -66,8 +66,8 @@
       (session/flash-put! :error-message message)
       (redirect "/"))
       (do
-      (session/flash-put! :name (:name (db/get-user-by-username username)))
-      (session/flash-put! :username username)
+      (session/put! :name (:name (db/get-user-by-username username)))
+      (session/put! :username username)
       (redirect "/home")))))
 
 (defn verify-registration
