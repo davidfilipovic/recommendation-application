@@ -32,7 +32,11 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 #home-header .degree, #header .degree{background:url("../images/top-degree.png") repeat-x; height:100%; width:100%;}
 .wrapper{width:1000px; margin:0 auto; position:relative;}
 #logo{position:absolute; top:39px; left:25px;}
-.top-search{position:absolute; top:0; right:10px;}
+.top-search{
+	position:absolute;
+	 top:0; 
+	 right:10px;
+}
 .icon{display:block; background-repeat:no-repeat; background-position:left top; width:16px; margin:3px; height:100%; text-indent:-9000px;}
 .icon-32{display:block; background-repeat:no-repeat; background-position:left top; width:32px; margin:3px; height:32px; text-indent:-9000px;}
 .shadow-divider{
@@ -98,16 +102,16 @@ table-game .td {padding:10px; border-bottom:1px solid #1f1f1f;}
 table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-color:#49494b;}
 /* INFO BOXES ------------------------------------------------------------*/
 
-.info, .success, .warning, .error, .validation{border:1px solid; margin:10px 0; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;}
+.info, .success, .warning-g, .error-g, .validation{border:1px solid; margin:10px 0; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;}
 .info{color:#00529B; background-color:#BDE5F8; background-image:url('../images/knobs-icons/knob-info.png');}
 .success{color:#4F8A10; background-color:#DFF2BF; background-image:url('../images/knobs-icons/knob-valid-green.png');}
-.warning{
+.warning-g{
 	color:#9F6000;
  	background-color:#FEEFB3;
 	background-image:url('../images/knob-attention.png');
 	margin-left: 5px;
 }
-.error{
+.error-g{
 	color:#D8000C; 
 	background-color:#FFBABA;
 	background-image:url('../images/knob-cancel.png');
@@ -136,9 +140,28 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 /* SEARCH ------------------------------------------------------------*/
 
 #searchform{}
-#searchform #s{color:#49494b; font-size:12px; width:160px; height:21px; margin:0 0 5px 0; padding:2px 35px 2px 8px; border:0; background:#f0efeb;}
-#searchform #searchsubmit{position:absolute; top:0; right:0; width:25px; height:25px; border:0; background:url("../images/sprites.png") no-repeat transparent 0 0;}
-#searchform #searchsubmit:hover{background-position:-27px 0;}
+#searchform #s{
+	color:#49494b; 
+	font-size:12px; 
+	width:160px; 
+	height:21px; 
+	margin:0 0 5px 0;
+	padding:2px 35px 2px 8px;
+	border:0; 
+	background:#f0efeb;
+}
+#searchform #searchsubmit{
+	position:absolute; 
+	top:0; 
+	right:0;
+ 	width:25px;
+	height:25px;
+	border:0; 
+ 	background:url("../images/sprites.png") no-repeat transparent 0 0;
+ }
+#searchform #searchsubmit:hover{
+	background-position:-27px 0;
+}
 
 /* NAVIGATION ------------------------------------------------------------*/
 
@@ -275,6 +298,7 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
     border-radius: 25px;
     margin-top:10px;
     float: right;
+    //z-index: 1;
 }
 .games-list li{
 	margin-bottom:10px;
@@ -454,8 +478,17 @@ div.accordion-container .block p, div.toggle-container .block p{margin-bottom:1.
 	 background:#d2d2d2; 
 	 border:none transparent;
 }
-#reviewForm input, #reviewForm textarea{
+#reviewForm input{
+	 width:97%;
+	 margin-bottom:6px; 
+	 font-family:Tahoma,Arial;
+	 border-width: 2px;
+	 margin-left: 5px;
+	 margin-right: 5px;
+}
+#reviewForm textarea{
 	 width:97%; 
+	 height: 150px;
 	 margin-bottom:6px; 
 	 font-family:Tahoma,Arial;
 	 border-width: 2px;

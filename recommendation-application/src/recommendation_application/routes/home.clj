@@ -37,7 +37,7 @@
        (include-js "../js/filterable.pack.js")
        (include-js "../js/jquery.tabs/jquery.tabs.pack.js")
        (include-js "../js/custom.js")
-       [:script
+       #_[:script
         {:type "text/javascript"}
         "\n// <![CDATA[\nvar flashvars = {};
          \nflashvars.cssSource = \"../js/piecemaker/piecemaker.css\";
@@ -55,47 +55,74 @@
        ]
       (let [user (session/get :username)]     
         [:body
+         
+         
          [:div#home-header
           [:div.degree
            [:div.wrapper
             [:div.title-holder
              [:div.title "Games recommendation"]
              [:div.username (str "Wellcome, " user)
-              (link-to "/logout" "logout")]]]]]      
+              (link-to "/logout" "logout")]]
+            
+            
+            
+          (form-to [:post "/games/"] 
+                   [:div.top-search
+                    [:div#searchform
+                   
+                      (text-field {:name "search" :id "s" :placeholder "Search..."} "")
+                      #_[:input
+                       {:type "text",
+                        ;:value "Search...",
+                         :name "s",
+                        :id "s",
+                        :onfocus "defaultInput(this)",
+                        :onblur "clearInput(this)"}]
+                         [:div#searchsubmit
+                          (submit-button {:name "submit", :id "searchsubmit"} "")
+                     ]]])
+          ]]]     
+         
+         
+         
+         
+         
+         
          [:div#main
           [:div.wrapper
            [:div.home-content
                        
-        [:div
+          [:div
              {:id "slideshow"}
              ; [:a
-         ;  {:href "http://www.adobe.com/go/getflashplayer"}
-         ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
-         [:img {:src "../images/arthas.jpg" :width "1000px"}]]
+           ;  {:href "http://www.adobe.com/go/getflashplayer"}
+           ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
+           [:img {:src "../images/arthas.jpg" :width "1000px"}]]
             
          
-          [:div.headline (session/get :game)]
+            [:div.headline (session/get :game)]
             [:div.shadow-divider]
-        [:div.front-left-col
+          [:div.front-left-col
              [:div.bullet-title
               [:div.big "Game"]
               [:div.small "Description"]]
-         left-content
-         [:div.headline-h "People who liked this game, also liked: "]
-        ;; recommendations
-        [:div.headline-h "Add review"]
-        add-rev
-        ]
+           left-content
+           [:div.headline-h "People who liked this game, also liked: "]
+          ;; recommendations
+          [:div.headline-h "Add review"]
+          add-rev
+          ]
             
-        [:div.front-middle-coll]
+          [:div.front-middle-coll]
             [:div.front-right-col
              [:div.bullet-title
               [:div.big "Critics"]
               [:div.small "List of acclaimed games critics"]]
-         right-content
-         ]
-        ; [:div.clear]
-        ]]]])))
+           right-content
+           ]
+          ; [:div.clear]
+          ]]]])))
 
 (defn- get-game [name]
   (let [game (get-game-by-name name)]
@@ -181,7 +208,7 @@
                [:div.warning-g
                 [:label (session/get :error-message-rev)]]])
              [:p               
-              (submit-button {:name "submit", :id "submit"} "Add");
+              (submit-button {:name "submit", :id "submit"} "Add")
                ]]]))
 
 (def date-form 
