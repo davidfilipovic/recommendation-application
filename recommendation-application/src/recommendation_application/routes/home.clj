@@ -21,6 +21,8 @@
                            [:div#searchsubmit
                             (submit-button {:name "submit", :id "searchsubmit"} "")])]])
 
+
+
 (defn left-col 
   [;recommendations
    left-content add-rev]
@@ -43,82 +45,7 @@
   [:div.front-right-col-games
    right-content]])
 
-(defn layout 
-  [;recommendations 
-  left-content
-   right-content
-   add-rev
-   ]  
-    (html5   
-      [:head
-       [:meta {:charset "utf=8"}]
-       (include-css "../css/main.css")
-       (include-css "../css/login.css")
-       (include-css "../js/prettyPhoto/css/prettyPhoto.css")
-       (include-js "../js/piecemaker/swfobject/swfobject.js")
-       (include-js "../js/jquery.prettyPhoto.js")
-       (include-js "../js/jquery.cycle.all.js")
-       (include-js "../js/jquery_1.4.2.js")
-       (include-js "../js/easing.js")
-       (include-js "../js/tooltip/jquery.tools.min.js")
-       (include-js "../js/jqueryui.js")
-       (include-js "../js/filterable.pack.js")
-       (include-js "../js/jquery.tabs/jquery.tabs.pack.js")
-       (include-js "../js/custom.js")]
-      (let [user (session/get :username)]     
-        [:body
-      
-       
-         
-         [:div#home-header
-          [:div.degree
-           [:div.wrapper
-            [:div.title-holder
-             [:div.title "Games recommendation"]
-             [:div.username (str "Wellcome, " user ". ")
-              (link-to "/logout" "Logout")]]
-            (identity search-box)]]]
-      
-         [:div#main
-          
-          
-    
-            
-            
-          [:div.wrapper
-           [:div.home-content           
-         [:div
-             {:id "slideshow"}
-             ; [:a
-          ;  {:href "http://www.adobe.com/go/getflashplayer"}
-          ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
-          [:img {:src "../images/arthas.jpg" :width "1000px"}]]
-                    
-         #_[:div.headline (session/get :game)]
-          
-         #_(left-col left-content 
-                     ; recommendations
-                    add-rev)
-            [:div.headline "List of all games"]
-              [:div.shadow-divider]
-         [:div.list-all
-          (for [game (take 20 (get-all-games))]
-            (let [img (game :picture)]
-           
-              [:div.games-list-left
-                [:ul.image-holder
-              [:li.block
-               [:img {:src img :class "thumb"}]]]
-                [:div.game-name 
-               (game :name)]
-                [:div.game-score
-                 (map read-string (game :score))]
-               ]))]
-         
-         #_[:div.front-middle-coll]
-            #_(right-col right-content)
-         ]]
-         ]])))
+
 
 (defn- get-game [name]
   (let [game (get-game-by-name name)]
@@ -159,9 +86,9 @@
      [:tr
       [:th "About: "]
       [:td (game :about)]]
-     [:div.pub-name "Publisher:"
+     [:div.pub-name "Publisher: "
       [:br][:br]
-      "Release date:"
+      "Release date: "
       [:br][:br]
       "Genre: "
       [:br][:br]
@@ -254,9 +181,8 @@
           (redirect (str "/games/" (game :name))))))))
 
 
-
 (defn show-game [game]
-  (layout 
+  #_(layout 
     ; [:h1 (str "Hello " (session/flash-get :username))]
   ;[:h1 (str "Hello " (session/flash-get :name))]
   ;[:h1 (link-to "/logout" "Logout")]
@@ -284,10 +210,144 @@
    ;(clojure.pprint/pprint (as-hiccup r))
    ))    
 
+(defn list-of-games 
+  [page]
+  (let [games (partition 10 (get-all-games))
+        last-page (count games)]
+    [:div#genId
+     ;[:br]
+     [:div.headline "List of all games"]
+     [:div.shadow-divider]
+     [:div.list-all
+      [:div.front-left-col-games  
+       (for [game (butlast (nth games (dec page)))]
+         (let [img (game :picture)]
+           [:div.games-list-left
+            [:ul.image-holder
+             [:li.block
+              [:a {:href (str "/games/" (game :name))}
+               [:img {:src img :class "thumb"}]]]]
+            [:div.game-name 
+             (game :name)] 
+            [:div.game-date 
+             ;(game :release-date)
+             "asdasd"]
+            [:br][:br][:br]
+            [:div.game-score
+             (map read-string (game :score))]]))
+       (let [game
+             (last
+               (nth games (dec page)))
+             img (game :picture)]
+         [:div.games-list-left-last
+          [:ul.image-holder
+           [:li.block
+            [:a {:href (str "/games/" (game :name))}
+             [:img {:src img :class "thumb"}]]]]
+          [:div.game-name 
+           (game :name)] 
+          [:div.game-date 
+           ;(game :release-date)
+           "asdasd"]
+          [:br][:br][:br]
+          [:div.game-score
+           (map read-string (game :score))]])]
+      
+      [:p {:class "clear"}]
+      [:div.pager
+       [:ul
+        {:class "portfolio-pager"}       
+        [:div.first
+         [:a               
+          {:href "/home&1#genId"} "First"]]       
+        [:div.previous
+         (if-not (= 1 page)
+           [:a
+            {:href (str "/home" "&" (dec page) "#genId")}])]      
+        [:div.middle
+         page]          
+        [:div.next
+         (if-not (= page last-page)
+           [:a
+            {:href (str "/home" "&" (inc page) "#genId")}])]             
+        [:div.last
+         [:a
+          {:href (str "/home&" last-page "#genId")} "Last"]]]]]]))
+
+(defn layout 
+  [;recommendations 
+  ;left-content
+   ;right-content
+   ;add-rev
+   page]  
+    (html5   
+      [:head
+       [:meta {:charset "utf=8"}]
+       (include-css "../css/main.css")
+       (include-css "../css/login.css")
+       (include-css "../js/prettyPhoto/css/prettyPhoto.css")
+        (include-js "../js/piecemaker/swfobject/swfobject.js")
+       (include-js "../js/jquery.prettyPhoto.js")
+       (include-js "../js/jquery.cycle.all.js")
+       (include-js "../js/jquery_1.4.2.js")
+       (include-js "../js/easing.js")
+       (include-js "../js/tooltip/jquery.tools.min.js")
+       (include-js "../js/jqueryui.js")
+       (include-js "../js/filterable.pack.js")
+       (include-js "../js/jquery.tabs/jquery.tabs.pack.js")
+       (include-js "../js/custom.js")]
+      (let [user (session/get :username)]     
+        [:body
+        
+         [:div#home-header
+          [:div.degree
+           [:div.wrapper
+            [:div.title-holder
+             [:div.title "Games recommendation"]
+             [:div.username (str "Wellcome, " user ". ")
+              (link-to "/logout" "Logout")]]
+            (identity search-box)]]]
+         
+         [:div#main
+          
+          
+          [:div.wrapper
+           [:div.home-content           
+            [:div
+             {:id "slideshow"}
+             ; [:a
+                 ;  {:href "http://www.adobe.com/go/getflashplayer"}
+                 ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
+                 [:img {:src "../images/arthas.jpg" :width "1000px"}]]
+            
+            #_[:div.headline (session/get :game)]
+          
+            (list-of-games page)        
+            #_(left-col left-content 
+                        ; recommendations
+                    add-rev)
+            
+            
+          #_[:div.front-middle-coll]
+          #_(right-col right-content)
+  
+          ]]]
+         
+         [:div#footer
+          [:div.degree]]
+         
+         [:div#bottom
+         [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]])))
+
+(defn show-page [page]
+  (layout 
+    page))
+
 
 (defroutes home-routes
   (GET "/home" [] (do (session/put! :game "Diablo")
                          (show-game "Diablo")))
+   (GET "/home&:page" [page] (show-page (Integer/valueOf page)))
   #_(GET "/home" [] (home-page))
   (GET "/logout" [] (logout))
   (GET "/games/:game" [game] 
@@ -303,4 +363,5 @@
         (redirect (str "/games/" game))))
 
 
+ 
 

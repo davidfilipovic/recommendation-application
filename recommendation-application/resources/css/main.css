@@ -26,13 +26,13 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 	font-size:20px; 
 	text-align:center;
 }
-#header #main, #footer, #bottom
-{
-	width:100%;}
+#header #main, #footer, #bottom{
+	width:100%;
+}
 #header{
 	height:134px;
-	 background:#e5e3dc url("../images/webtreats_blue_creme_pattern_93.jpg");
-	  border-bottom:1px solid #fff;
+	background:#e5e3dc url("../images/webtreats_blue_creme_pattern_93.jpg");
+	border-bottom:1px solid #fff;
 }
 #home-header{
 	height:203px; 
@@ -42,21 +42,21 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 #home-header .degree, #header .degree{
 	background:url("../images/top-degree.png") repeat-x; 
 	height:100%;
-	 width:100%;
+	width:100%;
+}
+#main{
+	width: 100%;
 }
 .wrapper{
 	width:1000px; 
 	margin:0 auto;
 	position:relative;
 }
-#logo{position:absolute; top:39px; left:25px;}
 .top-search{
 	position:absolute;
 	 top:75px; 
 	 right:10px;
 }
-.icon{display:block; background-repeat:no-repeat; background-position:left top; width:16px; margin:3px; height:100%; text-indent:-9000px;}
-.icon-32{display:block; background-repeat:no-repeat; background-position:left top; width:32px; margin:3px; height:32px; text-indent:-9000px;}
 .shadow-divider{
 	clear:both; 
 	height:25px; 
@@ -67,7 +67,6 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 .right{float:right;}
 .left{float:left;}
 .holder{overflow:hidden;}
-images.shadow-images{border:1px solid #fff; -webkit-box-shadow:0 0 3px #000; -moz-box-shadow:0 0 3px #000; box-shadow:0 0 3px #000;}
 
 ::-webkit-input-placeholder{
    color: black !important; 
@@ -112,26 +111,6 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	background-image:url('../images/knob-cancel.png');
 }
 
-
-
-/* NAVIGATION ------------------------------------------------------------*/
-
-#nav-holder{width:700px; position:absolute; top:68px; right:10px; font-size:20px;}
-#nav{display:block; float:right;}
-#nav li{display:block; float:left; padding-left:20px;}
-#nav li:first-child{padding-left:0;}
-#nav li a{color:#f0efeb; text-decoration:none; padding-bottom:5px;}
-#nav>li>a:hover, #nav>li.current_page_item>a{color:#d24c0a; background:url("../images/sprites.png") no-repeat center -51px;}
-
-/* sub nav */
-
-#nav li ul{padding:0; background:#1b1b1b;}
-#nav>li>ul{margin:5px 0 0 0;}
-#nav li ul li{padding:0; margin:0; border-bottom:1px solid #939392;}
-#nav li ul li:last-child{border-bottom:none;}
-#nav li ul li a{padding:10px; margin:0; font-size:12px; color:#939392;}
-#nav li ul li:hover{background:#4e4e50; background-position-x:-9000px;}
-#nav li ul li:hover a{color:#fff;}
 
 /* TITLE ------------------------------------------------------------*/
 
@@ -278,26 +257,45 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	padding-left: 1px;
 }
 
+/* GAMES LIST ------------------------------------------------------------*/
 
-
-
-
+#genId{}
 .list-all{
 	width:980px;
-	height: 1500px;
-	border: 2px solid black;
-	border-radius: 25px;
+	//height: 2000px;
 	margin-right: 10px;
 	margin-left: 10px;
 	float:right;
+	//position: relative;
+	//background-size:cover;
+}
+.front-left-col-games{
+	width:100%;
+	float:right;
+	//margin-right:15px; 
+	margin-top:0px; 
+	//height: 100%;
+	background:url('../images/pattern5.jpg');
+	background-width:100%;
+	background-height:100%;
+	border: 2px solid black;
+	border-radius: 25px;
 }
 .games-list-left{
-    padding: 8px 25px; 
+    padding: 8px 0px 8px 25px ; 
     margin-top:10px;
     float: left;
-    width:960px;
+    width:955px;
     border-bottom: 1px solid white;
 }
+.games-list-left-last{
+    padding: 8px 0px 0px 25px ; 
+    margin-top:10px;
+    float: left;
+    width:955px;
+    //border-bottom: 1px solid white;
+}
+
 .image-holder{
 	overflow:hidden;
  	width:150px;
@@ -317,12 +315,14 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 }
 .game-name{
 	//display:block; 
-    padding-left: 8px; 
-    width: 295px;
+    padding-left: 4px; 
+    width: 350px;
     margin-bottom: 2px;
     float: left;
-    margin-left: 10px;
+    margin-left: 0px;
     margin-top: 13px;
+   color:#adadad;
+    font-size: 16px;
 }
 .game-score{
 	background-color: #D15A04;
@@ -336,10 +336,95 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	text-align: center;
 	margin-top: 1px;
 	float:left;
+	margin-left: 5px;
+	//margin-bottom: 20px;
+}
+.game-date{
+	color:#49494b;
+	font-size:12px; 
+	text-align:left;
+	width: 50px;
+	float: left;
+	margin-top: 15px;
+	margin-left: 259px;
+	margin-bottom: 10px;
 }
 
 
+/* PAGER ------------------------------------------------------------*/
 
+.pager{
+	overflow:hidden; 
+	margin-right:20px;
+	margin-top:40px; 
+	margin-bottom:20px;
+	width: 100%;
+	height: 50px;
+}
+
+/* PORTFOLIO PAGER ------------------------------------------------------------*/
+
+.portfolio-pager{
+	overflow:hidden;
+	display:block; 
+	//height:35px;
+	//float:right;
+    width: 400px;
+	height: auto;
+    margin: 0 auto;
+    padding-left: 160px;
+    position: relative;
+    //text-align: center;
+}
+.portfolio-pager a{
+	display:block;
+	 width:100%; 
+	 height:100%;
+	 color: black;
+}
+.portfolio-pager .previous{
+	background:url('../images/sprites.png') no-repeat -104px -343px;
+	width:25px;
+	height:32px;
+	float:left;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+.portfolio-pager .next{
+	background:url('../images/sprites.png') no-repeat -142px -343px;
+	width:25px;
+	height:32px;
+	float:left;
+	margin-left: 15px;
+	margin-right: 15px;
+}
+.portfolio-pager .first{
+	width:42px;
+	height:25px;
+	float:left;
+	color: black;
+	font-size: 19px;
+	margin-top: 5px;
+}
+.portfolio-pager .last{
+	width:42px;
+	height:25px;
+	float:left;
+	color: black;
+	font-size: 19px;
+	margin-top: 5px;
+}
+.portfolio-pager .middle{
+	width:20px;
+	height:25px;
+	float:left;
+	color: black;
+	font-size: 19px;
+	margin-top: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	text-align: center;
+}
 
 /* REVIEWS ------------------------------------------------------------*/
 
@@ -592,48 +677,40 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	 margin-left: 5px;
 }
 
-
-
-/* STAFF ------------------------------------------------------------*/
-
-.staff li{overflow:hidden; margin-bottom:40px;}
-.staff li images{float:left;}
-.staff .information{float:left; margin-left:20px; width:550px;}
-.staff .information .header{background:url("../images/sprites.png") no-repeat -950px -667px; padding-left:20px; margin-bottom:5px;}
-.staff .information .header .name{font-size:24px;}
-.staff .information .header .contact{color:#999;}
-.staff .information .header .contact a{text-decoration:none;}
-
 /* FOOTER ------------------------------------------------------------*/
 
-#footer{position:relative; width:100%; background:#e5e3dc url("../images/bgs/webtreats/webtreats_blue_creme_pattern_87.jpg"); border-top:1px solid #fff;}
-#footer .degree{background:url("../images/top-degree.png") repeat-x; height:100%; width:100%; padding-top:20px; padding-bottom:20px;}
+#footer{
+	position:relative;
+	width:100%;
+	background:#e5e3dc url("../images/bgs/webtreats/webtreats_blue_creme_pattern_87.jpg");
+	border-top:1px solid #fff;
+}
+#footer .degree{
+	background:url("../images/top-degree.png") repeat-x; 
+	height:100%; width:100%;
+	padding-top:20px;
+    padding-bottom:20px;
+ }
 
-/* SOCIAL BAR ------------------------------------------------------------*/
-
-#social-bar{display:block; position:absolute; top:-75px; left:0; height:74px; width:1000px; overflow:hidden; color:#49494b; font-size:24px; background:url("../images/social-bg.png") no-repeat; z-index:222;}
-#social-bar ul.follow-us{display:block; overflow:hidden; float:left; margin-left:30px; margin-top:25px;}
-#social-bar ul.follow-us li{display:block; float:left; height:36px; margin-top:3px;}
-#social-bar ul.follow-us li:first-child{margin-top:10px; margin-right:6px;}
-#social-bar ul.follow-us li:last-child{margin-right:10px;}
-#social-bar ul.follow-us li a{display:block; height:32px; width:32px;}
-
-/* FOOTER-COLS ------------------------------------------------------------*/
-
-#footer ul.footer-cols{display:block; overflow:hidden; font-size:12px; padding-top:20px;}
-#footer ul.footer-cols{color:#f0efeb;}
-#footer ul.footer-cols a{color:#f0efeb;}
-#footer ul.footer-cols li.col{display:block; width:220px; float:left; margin-bottom:20px; margin-right:10px; margin-left:10px;}
-#footer ul.footer-cols li.col ul{}
-#footer ul.footer-cols li.col ul li{margin-bottom:.3em; margin-left:17px;}
-#footer ul.footer-cols li.col ul li a{text-decoration:none; line-height:1.5em; font-weight:lighter; color:#f0efeb;}
-#footer ul.footer-cols li.col h6{color:#fff; text-decoration:none; font-size:20px; margin:20px 15px 5px 0; background:url("../images/sprites.png") no-repeat 0 -884px; padding-left:17px;}
-#footer ul.footer-cols li.col ul li a:hover{text-decoration:underline;}
-#footer ul.footer-cols li.col p{line-height:1.5em;}
 
 /* BOTTOM ------------------------------------------------------------*/
 
-#bottom{color:#989797; font-size:12px; line-height:1.5em; font-weight:light; width:100%; border-top:1px solid #424345; background:#0d0d0d;}
-#bottom .wrapper{background:url("../images/bottom-texture.png") no-repeat; width:960px; padding:10px 20px;}
-#bottom a{color:#fff;}
+#bottom{
+	color:#989797;
+	font-size:12px;
+	line-height:1.5em; 
+	font-weight:light;
+	width:100%;
+	border-top:1px solid #424345;
+ 	background:#0d0d0d;
+ 	text-align: center;
+ }
+#bottom .wrapper{
+	background:url("../images/bottom-texture.png") no-repeat;
+	width:960px; 
+	padding:10px 20px;
+}
+#bottom a{
+	color:#fff;
+}
 
