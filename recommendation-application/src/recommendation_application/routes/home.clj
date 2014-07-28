@@ -1,7 +1,7 @@
 (ns recommendation-application.routes.home
   (:use [recommendation-application.get-data :only [home-page]]
         [recommendation-application.routes.authentication :only [logout]]
-        [recommendation-application.models.database :only [get-game-by-name update-game save-game]]
+        [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games]]
         [recommendation-application.recommendations :only [recommend-games-for-game]]
         [hiccup.form :only [form-to label text-area submit-button text-area text-field]]     
         [clj-time.core :only [now]]
@@ -13,7 +13,35 @@
              [clojure.string :as string]
             [clj-time.format :as format]
             [compojure.core :refer [defroutes GET POST]]))
- 
+
+(def search-box [:div.top-search
+                 [:div#searchform
+                  (form-to [:post "/games"]       
+                           (text-field {:name "game" :id "s" :placeholder "Search..."} "")                     
+                           [:div#searchsubmit
+                            (submit-button {:name "submit", :id "searchsubmit"} "")])]])
+
+(defn left-col 
+  [;recommendations
+   left-content add-rev]
+  [:div.front-left-col
+   [:div.bullet-title
+    [:div.big "Game"]
+    [:div.small "Description"]]
+   left-content
+   [:div.headline-h "People who liked this game, also liked: "]
+   ;; recommendations
+   [:div.headline-h "Add review"]
+   add-rev])
+
+(defn right-col [right-content]
+  [:div.front-right-col
+   [:div.front-right-col-title
+   [:div.bullet-title
+    [:div.big "Critics"]
+    [:div.small "List of acclaimed games critics"]]]  
+  [:div.front-right-col-games
+   right-content]])
 
 (defn layout 
   [;recommendations 
@@ -36,93 +64,61 @@
        (include-js "../js/jqueryui.js")
        (include-js "../js/filterable.pack.js")
        (include-js "../js/jquery.tabs/jquery.tabs.pack.js")
-       (include-js "../js/custom.js")
-       #_[:script
-        {:type "text/javascript"}
-        "\n// <![CDATA[\nvar flashvars = {};
-         \nflashvars.cssSource = \"../js/piecemaker/piecemaker.css\";
-         \nflashvars.xmlSource = \"../js/piecemaker/piecemaker.xml\";
-         \nflashvars.imageSource = \"../images/\";
-         \nvar params = {};
-         \nparams.play = \"false\";\nparams.menu = \"false\";
-         \nparams.scale = \"showall\";\nparams.wmode = \"transparent\";
-         \nparams.allowfullscreen = \"true\";\nparams.allowscriptaccess = \"sameDomain\";
-         \nparams.allownetworking = \"all\";
-         \nswfobject.embedSWF('../js/piecemaker/piecemaker.swf', 'slideshow-3d', '960', '430', '10', null, flashvars, params, null);\n// ]]>\n"]
-       ; [:style
-       ;{:type "text/css", :media "screen"}
-       ; "#slideshow-3d {visibility:hidden}"]
-       ]
+       (include-js "../js/custom.js")]
       (let [user (session/get :username)]     
         [:body
-         
+      
+       
          
          [:div#home-header
           [:div.degree
            [:div.wrapper
             [:div.title-holder
              [:div.title "Games recommendation"]
-             [:div.username (str "Wellcome, " user)
-              (link-to "/logout" "logout")]]
-            
-            
-            
-          (form-to [:post "/games/"] 
-                   [:div.top-search
-                    [:div#searchform
-                   
-                      (text-field {:name "search" :id "s" :placeholder "Search..."} "")
-                      #_[:input
-                       {:type "text",
-                        ;:value "Search...",
-                         :name "s",
-                        :id "s",
-                        :onfocus "defaultInput(this)",
-                        :onblur "clearInput(this)"}]
-                         [:div#searchsubmit
-                          (submit-button {:name "submit", :id "searchsubmit"} "")
-                     ]]])
-          ]]]     
-         
-         
-         
-         
-         
-         
+             [:div.username (str "Wellcome, " user ". ")
+              (link-to "/logout" "Logout")]]
+            (identity search-box)]]]
+      
          [:div#main
+          
+          
+    
+            
+            
           [:div.wrapper
-           [:div.home-content
-                       
-          [:div
+           [:div.home-content           
+         [:div
              {:id "slideshow"}
              ; [:a
-           ;  {:href "http://www.adobe.com/go/getflashplayer"}
-           ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
-           [:img {:src "../images/arthas.jpg" :width "1000px"}]]
-            
+          ;  {:href "http://www.adobe.com/go/getflashplayer"}
+          ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
+          [:img {:src "../images/arthas.jpg" :width "1000px"}]]
+                    
+         #_[:div.headline (session/get :game)]
+          
+         #_(left-col left-content 
+                     ; recommendations
+                    add-rev)
+            [:div.headline "List of all games"]
+              [:div.shadow-divider]
+         [:div.list-all
+          (for [game (take 20 (get-all-games))]
+            (let [img (game :picture)]
+           
+              [:div.games-list-left
+                [:ul.image-holder
+              [:li.block
+               [:img {:src img :class "thumb"}]]]
+                [:div.game-name 
+               (game :name)]
+                [:div.game-score
+                 (map read-string (game :score))]
+               ]))]
          
-            [:div.headline (session/get :game)]
-            [:div.shadow-divider]
-          [:div.front-left-col
-             [:div.bullet-title
-              [:div.big "Game"]
-              [:div.small "Description"]]
-           left-content
-           [:div.headline-h "People who liked this game, also liked: "]
-          ;; recommendations
-          [:div.headline-h "Add review"]
-          add-rev
-          ]
-            
-          [:div.front-middle-coll]
-            [:div.front-right-col
-             [:div.bullet-title
-              [:div.big "Critics"]
-              [:div.small "List of acclaimed games critics"]]
-           right-content
-           ]
-          ; [:div.clear]
-          ]]]])))
+         #_[:div.front-middle-coll]
+            #_(right-col right-content)
+         ]]
+         ]])))
 
 (defn- get-game [name]
   (let [game (get-game-by-name name)]
@@ -257,14 +253,6 @@
           (session/flash-put! :sort 1)
           (redirect (str "/games/" (game :name))))))))
 
-(def r (parse "<div class=\"top-search\">
-        <form method=\"get\" id=\"searchform\" action=\"http://www.free-css.com/free-css-templates\">
-          <div>
-            <input type=\"text\" value=\"Search...\" name=\"s\" id=\"s\" onfocus=\"defaultInput(this)\" onblur=\"clearInput(this)\">
-            <input type=\"submit\" id=\"searchsubmit\" value=\"\">
-          </div>
-        </form>
-      </div>"))
 
 
 (defn show-game [game]
@@ -310,7 +298,9 @@
        (redirect (str "/games/" game "#reviewForm")))
   (POST "/addnewreview" 
         [title review]  
-        (add-review-to-site title (session/get :rating) review)))
+        (add-review-to-site title (session/get :rating) review))
+  (POST "/games" [game]
+        (redirect (str "/games/" game))))
 
 
 

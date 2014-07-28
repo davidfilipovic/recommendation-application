@@ -47,6 +47,26 @@
          (first (map :href
                    (map :attrs content))))))
 
+(defn flat [content]
+  (flatten (map :content content)))
+
+(defn get-pub-date [link]
+ (let [content (hickory-parser-desc link "release_data" "data")]
+   (flat content)))
+
+(defn get-pub [link]
+ (let [content (hickory-parser-desc link "developer" "data")]
+   (flat content)))
+
+(defn get-genre [link]
+ (let [content (hickory-parser-desc link "product_genre" "data")]
+   (flat content)))
+
+(defn get-esrb [link]
+ (let [content (hickory-parser-desc link "product_rating" "data")]
+   (flat content)))
+
+
 (defn get-all-critics-data 
   "Get all informations about critics"
   [link]
@@ -55,10 +75,10 @@
         critic-body (hickory-parser-desc link "main_col" "review_body")
         critic-date (hickory-parser-desc link "main_col" "date")]
     (assoc {}
-        :name (flatten (map :content (flatten (map :content critic-name))))
+        :name (flat (flat critic-name))
         :score (map read-string (flatten (map :content critic-score)))
-        :body (flatten (map :content critic-body))
-        :date (flatten (map :content critic-date)))))
+        :body (flat critic-body)
+        :date (flat critic-date))))
         
 (defn prepare-critics
   "Get map with critics, and prepare them for saving"
@@ -123,6 +143,10 @@
                :score (get-game-score link)
                :picture (get-picture-link link)
                :about (get-summary-details link)
+               :publisher (get-pub link)
+               :genre (get-genre link)
+               :rating (get-esrb link)
+               :release-date (get-pub-date link)
                :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))]
     (save-game game)
     (swap! active-agents dec)
@@ -183,37 +207,6 @@
                     (assoc {} k [(first-critic k) (second-critic k)])))))
 
 
-
-(def diablo {:_id "#<ObjectId 3saasds1aasdasdsdasd2>",
-    :critics
-    [{:date "Nov 23, 2013",
-      :body
-      "Hands-down, th",
-      :score "100",
-      :name "Gamezilla!"}
-     {:date "Nov 14, 2013",
-      :body
-      "Deamers and RPG-ers alike will be enthralled. ",
-      :score "80",
-      :name "Computer Games Magazine"}
-     {:date "Nov 12, 2013",
-      :body
-      "Deamers and RPG-ers alike will be enthralled. ",
-      :score "80",
-      :name "Computer Games Magazine"}
-     {:date "Nov 16, 2013",
-      :body
-      "Deamers and RPG-ers alike will be enthralled. ",
-      :score "80",
-      :name "Computer Games Magazine"}
-     {:date "Nov 1, 2013",
-      :body
-      "Deamers and RPG-ers alike will be enthralled. ",
-      :score "80",
-      :name "Computer Games Magazine"}]
-    :score ["94"],
-    :name "Diablo4"})
-
 (defn home-page []
   (layout/common 
     [:h1 (str "Hello " (session/flash-get :username))]
@@ -241,9 +234,18 @@
     
      ;(clojure.pprint/pprint (shared-critics cla pu))
     
-     (clojure.pprint/pprint 
-      (prepare-critics 
-       (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))
+     
+     
+     
+     ;(clojure.pprint/pprint (get-esrb "http://www.metacritic.com/game/pc/half-life"))
+      
+     
+     
+     
+     
+     
+     ;(prepare-critics 
+       (clojure.pprint/pprint (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2"))
     
      ;(save-game diablo)
       

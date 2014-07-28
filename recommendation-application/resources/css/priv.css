@@ -28,7 +28,8 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 }
 #header #main, #footer, #bottom
 {
-	width:100%;}
+	width:100%;
+	}
 #header{
 	height:134px;
 	 background:#e5e3dc url("../images/webtreats_blue_creme_pattern_93.jpg");
@@ -44,25 +45,60 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 	height:100%;
 	 width:100%;
 }
-.wrapper{
+#maina{
+	width: 100%;
+	
+}
+.wrapper-header{
 	width:1000px; 
 	margin:0 auto;
 	position:relative;
 }
-#logo{position:absolute; top:39px; left:25px;}
+.wrapper{
+	width:52%; 
+	margin-top:0px; 
+	margin-bottom: 0px;
+	position:absolute;
+	left: 465px;
+	right: 443px;
+	margin-right: 443px;
+	//margin-left: 443px;
+	float:left;
+}
+
+
+.new-div{
+	width: 24%;
+	height: 2500px;
+	position:static;
+	left: 1px;
+	//margin-right: 1443px;	
+	float:left;
+	margin-top: 273px;	
+}
+
+
 .top-search{
 	position:absolute;
 	 top:75px; 
 	 right:10px;
 }
-.icon{display:block; background-repeat:no-repeat; background-position:left top; width:16px; margin:3px; height:100%; text-indent:-9000px;}
-.icon-32{display:block; background-repeat:no-repeat; background-position:left top; width:32px; margin:3px; height:32px; text-indent:-9000px;}
+
 .shadow-divider{
 	clear:both; 
 	height:25px; 
 	width:100%; 
 	background:url("../images/sprites.png") no-repeat 0 -416px;
 	margin-bottom:20px;
+}
+.shadow-divider-left{
+	clear:both; 
+	height:25px; 
+	width:100%; 
+	background:url("../images/sprites.png") no-repeat -420px -416px;
+	//background-size: 30px 25px; 
+	margin-bottom: 20px;
+	//-o-transform:rotate(-180deg);
 }
 .right{float:right;}
 .left{float:left;}
@@ -72,15 +108,6 @@ images.shadow-images{border:1px solid #fff; -webkit-box-shadow:0 0 3px #000; -mo
 ::-webkit-input-placeholder{
    color: black !important; 
 }
-
-/* CONTENT ------------------------------------------------------------*/
-
-.content{position:relative; overflow:hidden; top:-20px; min-height:600px; line-height:1.5em;}
-.content-blog{overflow:hidden; margin-top:30px; min-height:600px; line-height:1.5em;}
-.content p, .content-blog p{margin-bottom:21px;}
-.page-content{width:960px; margin-left:20px; margin-right:20px; overflow:hidden;}
-.page-content ul{list-style-type:disc; padding-left:20px;}
-.page-content ol{list-style-type:decimal; padding-left:20px;}
 
 
 /* TABLE ------------------------------------------------------------*/
@@ -112,26 +139,6 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	background-image:url('../images/knob-cancel.png');
 }
 
-
-
-/* NAVIGATION ------------------------------------------------------------*/
-
-#nav-holder{width:700px; position:absolute; top:68px; right:10px; font-size:20px;}
-#nav{display:block; float:right;}
-#nav li{display:block; float:left; padding-left:20px;}
-#nav li:first-child{padding-left:0;}
-#nav li a{color:#f0efeb; text-decoration:none; padding-bottom:5px;}
-#nav>li>a:hover, #nav>li.current_page_item>a{color:#d24c0a; background:url("../images/sprites.png") no-repeat center -51px;}
-
-/* sub nav */
-
-#nav li ul{padding:0; background:#1b1b1b;}
-#nav>li>ul{margin:5px 0 0 0;}
-#nav li ul li{padding:0; margin:0; border-bottom:1px solid #939392;}
-#nav li ul li:last-child{border-bottom:none;}
-#nav li ul li a{padding:10px; margin:0; font-size:12px; color:#939392;}
-#nav li ul li:hover{background:#4e4e50; background-position-x:-9000px;}
-#nav li ul li:hover a{color:#fff;}
 
 /* TITLE ------------------------------------------------------------*/
 
@@ -207,6 +214,29 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	background: #fff;
 	
 }
+
+.front-left-col-games{
+	width:100%;
+	float:right;
+	margin-right:15px; 
+	margin-top:0px; 
+	height: 1400px;
+	overflow: auto;
+}
+.games-list-left{
+	//display:block; 
+ 	/border: 2px solid #a1a1a1;
+    padding: 8px 20px; 
+    background: white;
+    width:290px;
+    /border-radius: 25px;
+    margin-top:10px;
+    float: right;
+}
+
+
+
+
 .thumb-d {
 	padding: 7px;
 	width: 100px;
@@ -220,27 +250,27 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	margin-right: 15px;
 }
 .front-right-col{
-	width:35.5%;
+	width:36.5%;
    // margin:0 0 0 10px;
 	float:right;
-	margin-right:33px; 
+	margin-right:20px; 
 	//margin-top:100px;
 }
 .front-right-col-games{
-	width:100%;
+	width:360px;
 	float:right;
-	margin-right:10px; 
+	margin-right:15px; 
 	margin-top:0px; 
 	height: 1400px;
 	overflow: auto;
 }
 .front-right-col-title{
-	width:100%;
+	width:355px;;
     height: 50px;
-	//float:right;
-	padding-right: 15px;
+	float:right;
+	//padding-right: 15px;
 	margin-right: 10px;
-	margin-left: 0px;
+	margin-left: 18x;
 }
 .front-middle-coll{
 	width:1%;
@@ -278,68 +308,32 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	padding-left: 1px;
 }
 
+/* SEARCH ------------------------------------------------------------*/
 
-
-
-
-.list-all{
-	width:980px;
-	height: 1500px;
-	border: 2px solid black;
-	border-radius: 25px;
-	margin-right: 10px;
-	margin-left: 10px;
-	float:right;
+#searchform{}
+#searchform #s{
+	color:#49494b; 
+	font-size:12px; 
+	width:160px; 
+	height:21px; 
+	text-color: black;
+	margin:0 0 5px 0;
+	padding:2px 35px 2px 8px;
+	border:0; 
+	background:#f0efeb;
 }
-.games-list-left{
-    padding: 8px 25px; 
-    margin-top:10px;
-    float: left;
-    width:960px;
-    border-bottom: 1px solid white;
+#searchform #searchsubmit{
+	position:absolute; 
+	top:0; 
+	right:0;
+ 	width:25px;
+	height:25px;
+	border:0; 
+ 	background:url("../images/sprites.png") no-repeat transparent 0 0;
+ }
+#searchform #searchsubmit:hover{
+	background-position:-27px 0;
 }
-.image-holder{
-	overflow:hidden;
- 	width:150px;
- 	display:block;
- 	float: left;
- 	padding-left: 0px;
- 	margin-top: 12px;
- 	margin-bottom: 16px;
-}
-.image-holder li{
-	display:block;
-	float:left;
-	width:120px;
-	position:relative;
-	margin-bottom:10px;
-	margin-right:0px;
-}
-.game-name{
-	//display:block; 
-    padding-left: 8px; 
-    width: 295px;
-    margin-bottom: 2px;
-    float: left;
-    margin-left: 10px;
-    margin-top: 13px;
-}
-.game-score{
-	background-color: #D15A04;
-	height: 28px;
-	width: 35px;
-	font-size: 17px;
-	text-color: white;
-	color: #fff;
-	line-height: 28px;
-	padding-right: 1px;
-	text-align: center;
-	margin-top: 1px;
-	float:left;
-}
-
-
-
 
 /* REVIEWS ------------------------------------------------------------*/
 
@@ -405,33 +399,6 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	padding-right: 1px;
 	 line-height: 60px;
 	//text-align: center;
-}
-
-/* SEARCH ------------------------------------------------------------*/
-
-#searchform{}
-#searchform #s{
-	color:#49494b; 
-	font-size:12px; 
-	width:160px; 
-	height:21px; 
-	text-color: black;
-	margin:0 0 5px 0;
-	padding:2px 35px 2px 8px;
-	border:0; 
-	background:#f0efeb;
-}
-#searchform #searchsubmit{
-	position:absolute; 
-	top:0; 
-	right:0;
- 	width:25px;
-	height:25px;
-	border:0; 
- 	background:url("../images/sprites.png") no-repeat transparent 0 0;
- }
-#searchform #searchsubmit:hover{
-	background-position:-27px 0;
 }
 
 /* HOME BLOCKS ------------------------------------------------------------*/
@@ -591,8 +558,6 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 	 font-weight:light;
 	 margin-left: 5px;
 }
-
-
 
 /* STAFF ------------------------------------------------------------*/
 
