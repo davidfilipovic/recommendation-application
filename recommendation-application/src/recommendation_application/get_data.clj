@@ -1,6 +1,6 @@
 (ns recommendation-application.get-data
   (:use [recommendation-application.models.database :only [save-game empty-db get-game-by-name get-all get-all-games get-by-score drop-all-data]]
-       ; [recommendation-application.recommendations :only [recommend-games-for-game]]
+        ;[recommendation-application.recommendations :only [recommend-games-for-game]]
        ;[recommendation-application.routes.home :only [date-form]]
        )
   (:require [compojure.core :refer :all]
@@ -50,21 +50,29 @@
 (defn flat [content]
   (flatten (map :content content)))
 
-(defn get-pub-date [link]
+(defn get-pub-date 
+  "Get date when the game is published."
+  [link]
  (let [content (hickory-parser-desc link "release_data" "data")]
-   (flat content)))
+   (first (flat content))))
 
-(defn get-pub [link]
+(defn get-pub 
+  "Game developer."
+  [link]
  (let [content (hickory-parser-desc link "developer" "data")]
-   (flat content)))
+   (first (flat content))))
 
-(defn get-genre [link]
+(defn get-genre 
+  "Game genre."
+  [link]
  (let [content (hickory-parser-desc link "product_genre" "data")]
-   (flat content)))
+   (first (flat content))))
 
-(defn get-esrb [link]
+(defn get-esrb 
+  "Ratings for children."
+  [link]
  (let [content (hickory-parser-desc link "product_rating" "data")]
-   (flat content)))
+   (first (flat content))))
 
 
 (defn get-all-critics-data 
@@ -73,10 +81,10 @@
   (let [critic-name (hickory-parser-desc link "main_col" "source")
         critic-score (hickory-parser-desc link "main_col" "indiv")
         critic-body (hickory-parser-desc link "main_col" "review_body")
-        critic-date (hickory-parser-desc link "main_col" "date")]
+        critic-date (hickory-parser-desc link "main_col" "date")]   
     (assoc {}
         :name (flat (flat critic-name))
-        :score (map read-string (flatten (map :content critic-score)))
+        :score (flat critic-score)
         :body (flat critic-body)
         :date (flat critic-date))))
         
@@ -89,40 +97,48 @@
          body (:body map)
          date (:date map)]
     (if (empty? score)
-      acc
-      (recur (conj acc
-                   (assoc {} 
-                          :name (first name) 
-                          :score (int (/ (first score) 20))
-                          :body (first body) 
-                          :date (first date))) 
-             (rest score) (rest name) (rest body) (rest date)))))
+       acc
+       (recur (conj acc
+                    (assoc {} 
+                           :name (first name) 
+                           :score (int (/ (read-string (first score)) 20))
+                           :body (first body) 
+                           :date (first date))) 
+              (rest score) (rest name) (rest body) (rest date)))))
 
-(defn get-game-score [link]
+(defn get-game-score 
+  "Game score."
+  [link]
 	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
-	    (first (map read-string (get 
-                               (second 
-                                 (first 
-                                   (map :content content))) :content)))))
+	    (first (map read-string
+                (get 
+                  (second 
+                    (first 
+                      (map :content content))) :content)))))
 
-(defn get-game-name [link]
+(defn get-game-name 
+  "Name of the game."
+  [link]
   (let [content
         (s/select 
           (s/child 
             (s/tag :head)
             (s/tag :title))
           (get-page link))]
-   ; (map read-string
         (string/replace 
          (first (first 
                  (map :content content))) " for PC Reviews - Metacritic" "")));));)
 
-(defn get-picture-link [link]
+(defn get-picture-link 
+  "Game thumbnail."
+  [link]
   (let [content (hickory-parser link "large_image")]
     (get (get (second 
                 (get (first content) :content)) :attrs) :src)))
 
-(defn get-summary-details [link]
+(defn get-summary-details 
+  "Get details about game."
+  [link]
   (let [content (hickory-parser-desc link "product_summary" "blurb_collapsed")
         content1 (hickory-parser-desc link "product_summary" "blurb_expanded")]
            (str (first (flatten
@@ -135,56 +151,77 @@
 (def active-agents (atom 0))
 
 (defn get-game 
-  [link]
   "Retreive game and prepare it for saving"
-  (let [game 
-        (assoc {} 
-               :name (get-game-name link)
-               :score (get-game-score link)
-               :picture (get-picture-link link)
-               :about (get-summary-details link)
-               :publisher (get-pub link)
-               :genre (get-genre link)
-               :rating (get-esrb link)
-               :release-date (get-pub-date link)
-               :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))]
-    (save-game game)
-    (swap! active-agents dec)
-    ))
-    
+  [link]
+  (let [game  (assoc {} 
+                     :name (get-game-name link)
+                     :score (get-game-score link)
+                     :picture (get-picture-link link)
+                     :about (get-summary-details link)
+                     :publisher (get-pub link)
+                     :genre (get-genre link)
+                     :rating (get-esrb link)
+                     :release-date (get-pub-date link)
+                     :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))] 
+    (if-not (not (empty? (filter (fn [a] (= a (:name game))) (map :name (get-all-games)))))
+       (do (save-game game)
+         (swap! active-agents dec)))))
+
 (def site-tree
   "Parse every page with links into map"
-  (for [i (range 1)]
-          (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?page=" i)))
+  (for [i (range 10)]
+    (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?page=" i)))
+
     
 (def get-link-for-every-game
   "Get every link from every page"
-  (atom (pmap (fn [link]
+  ;(atom
+    (pmap (fn [link]
                 (let [content (s/select 
                                 (s/child 
                                   (s/class "product_title"))
-                                (get-page link))]
+                            (get-page link))]
                   (map #(str "http://www.metacritic.com" %)    
                        (map :href
                             (map :attrs
                                  (map #(get % 1)
                                       (map :content content)))))))
-              site-tree)))
+              site-tree))
+;)
 
 (defn get-games-from-links
+  "Retreive games for every link."
   []
   (dorun (map #(let [agent (agent %)]
                  (send agent get-game)
                  (swap! active-agents inc)) 
-                   (first @get-link-for-every-game))))
+              (first @get-link-for-every-game))))
 
-(defn aa []
-  (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
-      (doseq [agent agents] 
+
+(defn bb [] 
+  (map get-game (dorun (take 2  get-link-for-every-game))))
+
+
+#_(defn aa []
+   (doall  (pmap 
+             #(let [agent (agent %)]       
+               (send agent get-game))
+             (first @get-link-for-every-game))))
+
+
+
+
+;   (apply await-for 1000 agents)
+; (doall (map #(deref %) agents))
+
+
+#_(defn aa []
+   (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
+       (doseq [agent agents] 
        (send agent get-game))
  ;   (apply await-for 1000 agents)
-   ; (doall (map #(deref %) agents))
-   ))
+    ; (doall (map #(deref %) agents))
+    ))
 
 (defn prepare-base []
   (drop-all-data)
@@ -192,19 +229,22 @@
   )
 
 (defn game-critics []
+  "Return all critics names along with their rates."
   (apply merge {}
-       (for [game (get-all-games)] 
-         (assoc {} (:name game) 
-                (into {} (for [critic (:critics game)]
-                           (assoc {} (:name critic) (read-string (:score critic)))))))))
+         (for [game (get-all-games)]
+           (assoc {} (:name game) 
+                  (into {} (for [critic (:critics game)]
+                             (assoc {} (:name critic) ;(read-string 
+                                                      (:score critic))))))));)
 
 (defn shared-critics [data first-game second-game]
- (let [first-critic (data first-game)
-       second-critic (data second-game)]
-   (apply merge {}
-      (for [k (keys first-critic)
-                        :when (contains? second-critic k)]
-                    (assoc {} k [(first-critic k) (second-critic k)])))))
+  "Find any matching critics for two games."
+  (let [first-critic (data first-game)
+        second-critic (data second-game)]
+    (apply merge {}
+           (for [k (keys first-critic)
+                 :when (contains? second-critic k)]
+             (assoc {} k [(first-critic k) (second-critic k)])))))
 
 
 (defn home-page []
@@ -237,31 +277,36 @@
      
      
      
-     ;(clojure.pprint/pprint (get-esrb "http://www.metacritic.com/game/pc/half-life"))
+    ;
+    ;(shared-critics (game-critics) "Diablo" "Dota 2"))
+    ;(clojure.pprint/pprint 
+      ;(get-game-by-name "Sanctum 2")); "http://www.metacritic.com/game/pc/magic-duels-of-the-planeswalkers-2014")
       
+     (clojure.pprint/pprint 
+       (get-game-score "http://www.metacritic.com/game/pc/sanctum-2"))
      
      
      
      
      
-     ;(prepare-critics 
-       (clojure.pprint/pprint (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2"))
+    ;(prepare-critics 
+      ;(clojure.pprint/pprint (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2"))
     
-     ;(save-game diablo)
+    ;(save-game diablo)
       
-     ;(clojure.pprint/pprint (game-critics))
-     ;     
-     ;(take 10 
-     ;   (first @get-link-for-every-game))
+    ;(clojure.pprint/pprint (game-critics))
+    ;     
+    ;(take 10 
+    ;   (first @get-link-for-every-game))
       
-     ;(clojure.pprint/pprint (dorun
-     ;                       (take 10 (first @get-link-for-every-game))
-     ; (get-page "http://www.metacritic.com/game/pc/taito-legends")
-       ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/half-life-2"))
-     ;
-     ;(clojure.pprint/pprint
-     ;(get-all "games")
-     [:h1 "Number of games imported: "]
+    ;(clojure.pprint/pprint (dorun
+    ;                       (take 10 (first @get-link-for-every-game))
+    ; (get-page "http://www.metacritic.com/game/pc/taito-legends")
+      ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/half-life-2"))
+    ;
+    ;(clojure.pprint/pprint
+    ;(get-all "games")
+    [:h1 "Number of games imported: "]
      [:h1 (count (get-all-games))]))
 
 

@@ -8,7 +8,7 @@
 (def db (mg/get-db connection "database"))
 
 (defn insert-admin []
-  (mc/insert db "users" {:_id (ObjectId.) :name "David" :email "david.1990@ymail.com" :username "admin" :password "admin"}))
+  (mc/insert db "users" {:id (inc 1) :name "David" :email "david.1990@ymail.com" :username "admin" :password "admin"}))
 
 (defn empty-db [table]
   (mc/remove db table))

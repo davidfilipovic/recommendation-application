@@ -7,6 +7,7 @@
   (reduce * (repeat n x)))
 
 (defn pearson-correlation 
+  "Calculate pearson correlation."
   [data first-critic second-critic]
   (let [shared-games (shared-critics data first-critic second-critic)
         size (count shared-games)]
@@ -24,7 +25,7 @@
             numerator (- product-sum (/ (* first-sum second-sum) size))
             first-factor (- first-square-sum (/ (expt first-sum 2) size))
             second-factor (- second-square-sum (/ (expt second-sum 2) size))
-            denominator (Math/sqrt (* first-factor second-factor))]
+            denominator (Math/sqrt (* first-factor second-factor))]          
         (if (zero? denominator)
           0
           (/ numerator denominator))))))
@@ -42,10 +43,11 @@
       (take n (sort-by first > matches)))))
 
 (defn recommend-games-for-game 
+  "Returns recommendation for supplied game name."
   [game-name]
   (let [games-names (keys (game-critics))
         other-games (filter #(not= game-name %) games-names)
         similar-games (pmap #(pearson-correlation (game-critics) game-name %) other-games)
-        final-map (zipmap other-games similar-games)]
+        final-map (zipmap other-games similar-games)]   
    (sort-by val > (into {} (filter (fn [[key value]] (if (< 0 value)
                                                (dissoc final-map key))) final-map)))))

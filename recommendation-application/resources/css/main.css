@@ -84,16 +84,35 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 
 /* TABLE ------------------------------------------------------------*/
 
-table, td, th{vertical-align:middle;}
-table{border-collapse:separate; border-spacing:0; border-top:1px solid white; margin-bottom:28px; width:100%; text-align:left;}
-th{border-top:5px solid #555; color:#fff; padding:10px; text-transform:uppercase; background-color:#49494b;}
+table, td, th{
+	vertical-align:middle;
+}
+table{
+	border-collapse:separate; 
+	border-spacing:0; 
+	border-top:0px solid white;
+    margin-bottom:28px; 
+	width:100%; 
+	text-align:left;
+}
+th{
+	//border-top:0px solid #555;
+	color:#fff;
+	padding:10px;
+	text-transform:uppercase; 
+	//background-color:black;
+	background:url('../images/pattern.jpg');
+}
 td{padding:10px;}
-td, th{border-bottom:1px solid #1f1f1f;}
+td, th{
+	border-bottom:1px solid white; //#1f1f1f;
+}
 
 table-game{border-collapse:separate; border-spacing:0; border-top:1px solid white; margin-bottom:28px; width:100px; text-align:left;}
 
 table-game .td {padding:10px; border-bottom:1px solid #1f1f1f;}
-table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-color:#49494b;}
+table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-color:#49494b;}
+
 /* INFO BOXES ------------------------------------------------------------*/
 
 .info, .success, .warning-g, .error-g, .validation{border:1px solid; margin:10px 0; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;}
@@ -144,7 +163,17 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 
 /* SLIDESHOW ------------------------------------------------------------*/
 
-#slideshow{overflow:hidden; position:relative; left:0; width:1000px; height:363px; margin-bottom:20px; background:url("../images/slideshow-bg.png") no-repeat; z-index:0;}
+#slideshow{
+	overflow:hidden; 
+	position:relative; 
+	left:0;
+	 width:990px; 
+	height:420px; 
+	margin-bottom:20px; 
+	background:url("../images/slideshow-bg.png") no-repeat;
+	z-index:0;
+	border: 2px solid #f0efeb;
+}
 #slideshow #slideshow-link span{display:block; position:absolute; left:20px; top:10px; width:960px; height:320px; z-index:50;}
 #slideshow ul#slides{position:relative; left:20px; top:10px; width:960px; height:322px;}
 #slideshow-nav-holder{display:block; position:absolute; overflow:hidden; width:960px; padding:6px 10px 6px 10px; bottom:0; right:0; z-index:10; background:url("../images/slideshow-nav-bg.png") no-repeat;}
@@ -682,12 +711,14 @@ table-game .th {border-top:5px solid #555; color:#fff; padding:10px; background-
 #footer{
 	position:relative;
 	width:100%;
-	background:#e5e3dc url("../images/bgs/webtreats/webtreats_blue_creme_pattern_87.jpg");
+	background:#e5e3dc url("../images/pattern5.jpg");
 	border-top:1px solid #fff;
+	height: 80px;
 }
 #footer .degree{
 	background:url("../images/top-degree.png") repeat-x; 
-	height:100%; width:100%;
+	height:100%;
+	 width:100%;
 	padding-top:20px;
     padding-bottom:20px;
  }

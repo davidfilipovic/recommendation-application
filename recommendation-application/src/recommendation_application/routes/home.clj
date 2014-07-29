@@ -2,7 +2,9 @@
   (:use [recommendation-application.get-data :only [home-page]]
         [recommendation-application.routes.authentication :only [logout]]
         [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games]]
-        [recommendation-application.recommendations :only [recommend-games-for-game]]
+       [recommendation-application.recommendations :only [;recommend-games-for-game
+                                                               pearson-correlation]]
+        recommendation-application.get-data                                         
         [hiccup.form :only [form-to label text-area submit-button text-area text-field]]     
         [clj-time.core :only [now]]
         hickory.core)
@@ -11,30 +13,19 @@
             [noir.session :as session]
             [hiccup.element :refer :all]
              [clojure.string :as string]
+             [recommendation-application.views.layout :as layout]
             [clj-time.format :as format]
             [compojure.core :refer [defroutes GET POST]]))
 
 (def search-box [:div.top-search
                  [:div#searchform
                   (form-to [:post "/games"]       
-                           (text-field {:name "game" :id "s" :placeholder "Search..."} "")                     
+                           (text-field {:name "game" :id "s" :placeholder "Search game..."} "")                     
                            [:div#searchsubmit
                             (submit-button {:name "submit", :id "searchsubmit"} "")])]])
 
 
 
-(defn left-col 
-  [;recommendations
-   left-content add-rev]
-  [:div.front-left-col
-   [:div.bullet-title
-    [:div.big "Game"]
-    [:div.small "Description"]]
-   left-content
-   [:div.headline-h "People who liked this game, also liked: "]
-   ;; recommendations
-   [:div.headline-h "Add review"]
-   add-rev])
 
 (defn right-col [right-content]
   [:div.front-right-col
@@ -47,13 +38,13 @@
 
 
 
-(defn- get-game [name]
+(defn- get-game1 [name]
   (let [game (get-game-by-name name)]
     game))
 
 (defn- get-reviews
   [game-name]
-  (let [game (get-game game-name)
+  (let [game (get-game1 game-name)
         reviews  ;(sort-by :date 
         (reverse (game :critics))]
     (for [review reviews]
@@ -71,7 +62,7 @@
 
 (defn get-game-information
   [game-name]
-  (let [game (get-game game-name)
+  (let [game (get-game1 game-name)
         img (game :picture)]
     [:table
      [:ul.blocks-holder
@@ -95,16 +86,7 @@
       "Rating: "]]
     ))
 
-(defn show-recommendations [game-name]
-  (let [games (take 15 (recommend-games-for-game game-name))]
-    (if (not= 0 (count games))
-      [:div.front-left-down-col 
-       (for [name games]
-        (let [game (get-game-by-name (first name))
-              src (game :picture)
-              g-name (game :name)]
-            [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]
-            ))])))
+
 
 (defn show-add-review-box [game]
   (form-to [:post "/addnewreview"]
@@ -133,82 +115,6 @@
              [:p               
               (submit-button {:name "submit", :id "submit"} "Add")
                ]]]))
-
-(def date-form 
-  (format/formatter "MMM dd, yyyy"))
-
-(defn verify-review [title review rating]
-  (cond 
-    (or (nil? rating) (zero? rating)) "Please rate game."
-    (or (= "" title) (nil? title)) "Please provide a title."
-    :else true))
-
-(defn add-review-to-site 
-  [title rating review]
-  (let [message (verify-review title review rating)
-        game (get-game-by-name
-                   (session/get :game))]
-    (if (string? message)
-      (do
-        (session/put! :error-message-rev message)
-        (redirect (str "/games/" (game :name) "#reviewForm")))
-      (let [user (session/get :review)
-            
-            game-c (count (game :critics))
-            num-of-critics (count (game :critics))
-            new-critic (merge game 
-                              {:critics (conj (game :critics) 
-                                              (assoc {} 
-                                                     :name title
-                                                     :body review
-                                                     :date (format/unparse date-form
-                                                                           (new org.joda.time.DateTime (.toDate (now))
-                                                                                (org.joda.time.DateTimeZone/forID "UTC")))
-                                                     :score (Integer/valueOf rating)))}
-                              {:score [(str (int
-                                              (quot (+ 
-                                                    (* num-of-critics 
-                                                       (first (map read-string 
-                                                                   (game :score)))) 
-                                                    rating) 
-                                                   (inc num-of-critics))))]})]  
-        (do
-          (update-game game new-critic)
-          (session/remove! :game)
-          (session/remove! :rating)
-          (session/remove! :error-message-rev)
-          (session/flash-put! :sort 1)
-          (redirect (str "/games/" (game :name))))))))
-
-
-(defn show-game [game]
-  #_(layout 
-    ; [:h1 (str "Hello " (session/flash-get :username))]
-  ;[:h1 (str "Hello " (session/flash-get :name))]
-  ;[:h1 (link-to "/logout" "Logout")]
-    
-  ;(clojure.pprint/pprint
-    
-  ;(show-recommendations game)
-  
-  
-  
-  (get-game-information game)
-  (get-reviews game)
-  (show-add-review-box game)
-  
-
-  
- ; (clojure.pprint/pprint 
-  ;(map read-string 
-  ;(get-game-by-name "Diablo"))
-   
-  ;(save-game diablo)
-  ;(show-recommendations "Diablo")
-  ; 
-   ;(clojure.pprint/pprint(format/show-formatters))
-   ;(clojure.pprint/pprint (as-hiccup r))
-   ))    
 
 (defn list-of-games 
   [page]
@@ -274,85 +180,230 @@
          [:a
           {:href (str "/home&" last-page "#genId")} "Last"]]]]]]))
 
-(defn layout 
-  [;recommendations 
-  ;left-content
-   ;right-content
+(def date-form 
+  (format/formatter "MMM dd, yyyy"))
+
+(defn verify-review [title review rating]
+  (cond 
+    (or (nil? rating) (zero? rating)) "Please rate game."
+    (or (= "" title) (nil? title)) "Please provide a title."
+    :else true))
+
+(defn add-review-to-site 
+  [title rating review]
+  (let [message (verify-review title review rating)
+        game (get-game-by-name
+                   (session/get :game))]
+    (if (string? message)
+      (do
+        (session/put! :error-message-rev message)
+        (redirect (str "/games/" (game :name) "#reviewForm")))
+      (let [user (session/get :review)
+            
+            game-c (count (game :critics))
+            num-of-critics (count (game :critics))
+            new-critic (merge game 
+                              {:critics (conj (game :critics) 
+                                              (assoc {} 
+                                                     :name title
+                                                     :body review
+                                                     :date (format/unparse date-form
+                                                                           (new org.joda.time.DateTime (.toDate (now))
+                                                                                (org.joda.time.DateTimeZone/forID "UTC")))
+                                                     :score (Integer/valueOf rating)))}
+                              {:score [(str (int
+                                              (quot (+ 
+                                                    (* num-of-critics 
+                                                       (first (map read-string 
+                                                                   (game :score)))) 
+                                                    rating) 
+                                                   (inc num-of-critics))))]})]  
+        (do
+          (update-game game new-critic)
+          (session/remove! :game)
+          (session/remove! :rating)
+          (session/remove! :error-message-rev)
+          (session/flash-put! :sort 1)
+          (redirect (str "/games/" (game :name))))))))
+
+
+
+
+
+
+
+
+
+
+
+
+#_(defn left-col 
+  [recommendations
+   ;left-content 
+    ;add-rev
+    ]
+  [:div.front-left-col
+   [:div.bullet-title
+    [:div.big "Game"]
+    [:div.small "Description"]]
+   ;left-content
+    [:div.headline-h "People who liked this game, also liked: "]
+   recommendations
+   [:div.headline-h "Add review"]
    ;add-rev
-   page]  
-    (html5   
-      [:head
-       [:meta {:charset "utf=8"}]
-       (include-css "../css/main.css")
-       (include-css "../css/login.css")
-       (include-css "../js/prettyPhoto/css/prettyPhoto.css")
-        (include-js "../js/piecemaker/swfobject/swfobject.js")
-       (include-js "../js/jquery.prettyPhoto.js")
-       (include-js "../js/jquery.cycle.all.js")
-       (include-js "../js/jquery_1.4.2.js")
-       (include-js "../js/easing.js")
-       (include-js "../js/tooltip/jquery.tools.min.js")
-       (include-js "../js/jqueryui.js")
-       (include-js "../js/filterable.pack.js")
-       (include-js "../js/jquery.tabs/jquery.tabs.pack.js")
-       (include-js "../js/custom.js")]
-      (let [user (session/get :username)]     
-        [:body
-        
-         [:div#home-header
-          [:div.degree
-           [:div.wrapper
-            [:div.title-holder
+    ])
+
+
+#_(defn show-recommendations [game-name]
+   (let [games (take 15 (recommend-games-for-game game-name))]
+     (if (not= 0 (count games))
+       [:div.front-left-down-col 
+        (for [name games]
+         (let [game (get-game-by-name (first name))
+               src (game :picture)
+               g-name (game :name)]
+             [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]
+             ))])))
+
+#_(defn layout 
+  [;recommendations 
+   ;left-content
+    ;right-content
+   ; add-rev
+    ;page
+    ]  
+  (html5   
+    [:head
+     [:meta {:charset "utf=8"}]
+     
+      (include-css "/css/main.css")
+      (include-css "/js/prettyPhoto/css/prettyPhoto.css")
+      
+     (include-js "/js/jquery_1.4.2.js")
+      (include-js "/js/jqueryui.js")
+      (include-js "/js/easing.js")
+      (include-js "/js/jquery.cycle.all.js")
+      (include-js "/js/jquery.tools.min.js")
+      (include-js "/js/filterable.pack.js") 
+      (include-js "/js/prettyPhoto/js/jquery.prettyPhoto.js")
+      (include-js "/js/jquery.tabs.pack.js")
+     ; (include-js "/js/custom.js")
+      (include-css "/css/login.css") 
+      (include-js "/js/cufon-yui.js")
+      (include-js "/js/piecemaker/swfobject/swfobject.js")]
+      
+    (let [user (session/get :username)]     
+      [:body
+       
+       [:div#home-header
+        [:div.degree
+         [:div.wrapper
+          [:div.title-holder
              [:div.title "Games recommendation"]
              [:div.username (str "Wellcome, " user ". ")
               (link-to "/logout" "Logout")]]
-            (identity search-box)]]]
-         
-         [:div#main
+          (identity search-box)]]]
+       
+       [:div#main
+        
+        [:div.wrapper
+         [:div.home-content  
           
+          [:div
+           {:id "slideshow"}
+           [:img {:src "/images/arthas.jpg" :width "990px"}]]
           
-          [:div.wrapper
-           [:div.home-content           
-            [:div
-             {:id "slideshow"}
-             ; [:a
-                 ;  {:href "http://www.adobe.com/go/getflashplayer"}
-                 ; [:img {:src "images/get_flash_player.gif", :alt ""}]]]
-                 [:img {:src "../images/arthas.jpg" :width "1000px"}]]
-            
-            #_[:div.headline (session/get :game)]
+           #_[:div.headline (session/get :game)] 
+           
+          ; (list-of-games page)             
           
-            (list-of-games page)        
-            #_(left-col left-content 
+           ;(left-col ;left-content 
                         ; recommendations
-                    add-rev)
-            
-            
-          #_[:div.front-middle-coll]
-          #_(right-col right-content)
-  
-          ]]]
-         
-         [:div#footer
-          [:div.degree]]
-         
-         [:div#bottom
-         [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]])))
+                        ;add-rev
+                        ;)        
+           ;[:div.front-middle-coll]
+           ;(right-col right-content)
+           ]]]
+       
+       [:div#footer
+        [:div.degree]]
+       
+       [:div#bottom
+        [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]])))
 
-(defn show-page [page]
+#_(defn show-game [game]
   (layout 
-    page))
 
+   ;(clojure.pprint/pprint
+
+  
+  
+  
+  
+   ;(show-recommendations game)    
+  
+  
+  
+  
+  
+  
+  
+   ;(get-game-information game)
+   ;(get-reviews game)
+   ;(show-add-review-box game)
+  
+
+  
+  ; (clojure.pprint/pprint 
+   ;(map read-string 
+   ;(get-game-by-name "Diablo"))
+   
+   ;(save-game diablo)
+   ;(show-recommendations "Diablo")
+   ; 
+    ;(clojure.pprint/pprint(format/show-formatters))
+    ;(clojure.pprint/pprint (as-hiccup r))
+    ))  
+
+
+
+#_(defn show-page [page]
+   (layout 
+     page))
+
+
+(defn home-page1 []
+  (layout/common 
+    
+    ;(pearson-correlation (game-critics) "Diablo" "Dota 2")
+    ;(clojure.pprint/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))
+   
+    ;(clojure.pprint/pprint (game-critics))
+    
+   ; (aa)
+    
+    (bb)
+    ;(get-game "http://www.metacritic.com/game/pc/sanctum-2")
+    
+    
+    ;(clojure.pprint/pprint (take 5 @get-link-for-every-game))
+    
+   ;(for [game (take 10 (get-all-games))]
+     ;(into {} (:critics game)))
+   
+    [:h1 "Number of games imported: "]
+     [:h1 (count (get-all-games))]
+    ))
 
 (defroutes home-routes
-  (GET "/home" [] (do (session/put! :game "Diablo")
-                         (show-game "Diablo")))
-   (GET "/home&:page" [page] (show-page (Integer/valueOf page)))
-  #_(GET "/home" [] (home-page))
+  #_(GET "/home" [] (do (session/put! :game "Sanctum 2")
+                      (show-game "Sanctum 2")))
+  #_(GET "/home&:page" [page] (show-page (Integer/valueOf page)))
+  (GET "/home" [] (home-page1))
   (GET "/logout" [] (logout))
-  (GET "/games/:game" [game] 
-       (do (session/put! :game game)
-         (show-game game)))
+  #_(GET "/games/:game" [game] 
+        (do (session/put! :game game)
+          (show-game game)))
   (GET "/new-rating/:game&:rvalue" [game rvalue]
        (session/put! :rating (Integer/valueOf rvalue))
        (redirect (str "/games/" game "#reviewForm")))
@@ -361,7 +412,27 @@
         (add-review-to-site title (session/get :rating) review))
   (POST "/games" [game]
         (redirect (str "/games/" game))))
+ 
 
 
+   #_[:object
+             {:type "application/x-shockwave-flash",
+              :data "js/piecemaker/piecemaker.swf",
+              :width "800",
+              :height "600"}
+             "\n\t\t\t\t"
+             "<!--<![endif]-->"
+             "\n\t\t\t\t\t"
+             [:a
+              {:href "http://www.adobe.com/go/getflashplayer"}
+              "\n\t\t\t\t\t\t"
+              [:img
+               {:src
+                "http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif",
+                :alt "Get Adobe Flash player"}]
+              "\n\t\t\t\t\t"]
+             "\n\t\t\t\t"
+             "<!--[if !IE]>-->"
+             "\n\t\t\t\t"]
  
 
