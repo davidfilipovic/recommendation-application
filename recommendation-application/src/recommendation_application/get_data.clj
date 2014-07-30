@@ -110,11 +110,11 @@
   "Game score."
   [link]
 	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
-	    (first (map read-string
-                (get 
-                  (second 
-                    (first 
-                      (map :content content))) :content)))))
+	    (int (/ (first (map read-string
+                        (get 
+                          (second 
+                            (first 
+                              (map :content content))) :content))) 20))))
 
 (defn get-game-name 
   "Name of the game."
@@ -148,7 +148,8 @@
                         (map :content
                            content1)))))) 
 
-(def active-agents (atom 0))
+(def refr (atom 0))
+;(def *refr* (agent 0))
 
 (defn get-game 
   "Retreive game and prepare it for saving"
@@ -162,10 +163,16 @@
                      :genre (get-genre link)
                      :rating (get-esrb link)
                      :release-date (get-pub-date link)
-                     :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))] 
-    (if-not (not (empty? (filter (fn [a] (= a (:name game))) (map :name (get-all-games)))))
+                     :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))
+        all-games (lazy-seq (get-all-games))] 
+    #_(do (save-game game)
+          (swap! refr dec))
+    (if-not (not (empty? (filter (fn [a] (= a (:name game)))  (map :name all-games))))
        (do (save-game game)
-         (swap! active-agents dec)))))
+         (swap! refr dec)
+         ;(dosync refr dec)
+        ; (send *refr* dec)
+        ))))
 
 (def site-tree
   "Parse every page with links into map"
@@ -175,32 +182,40 @@
     
 (def get-link-for-every-game
   "Get every link from every page"
-  ;(atom
-    (pmap (fn [link]
+  (atom
+   (pmap (fn [link]
                 (let [content (s/select 
                                 (s/child 
                                   (s/class "product_title"))
-                            (get-page link))]
+                           (get-page link))]
                   (map #(str "http://www.metacritic.com" %)    
                        (map :href
                             (map :attrs
                                  (map #(get % 1)
                                       (map :content content)))))))
-              site-tree))
-;)
-
-(defn get-games-from-links
-  "Retreive games for every link."
-  []
-  (dorun (map #(let [agent (agent %)]
-                 (send agent get-game)
-                 (swap! active-agents inc)) 
-              (first @get-link-for-every-game))))
+              site-tree)))
 
 
-(defn bb [] 
-  (map get-game (dorun (take 2  get-link-for-every-game))))
 
+(defn tt []
+  (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
+    (doseq [*agent* agents]
+        (send *agent* get-game)
+        ;(send *refr* inc)
+        (swap! refr inc)
+        ;(dosync refr inc))
+        )))
+
+(defn watch 
+  [key agent old new]
+  (if (= 200 new)
+    (do 
+      (swap! get-link-for-every-game #(rest %))
+      (if-not (empty? @get-link-for-every-game)
+        (tt)))))
+
+
+(add-watch refr :key watch)
 
 #_(defn aa []
    (doall  (pmap 
@@ -234,8 +249,7 @@
          (for [game (get-all-games)]
            (assoc {} (:name game) 
                   (into {} (for [critic (:critics game)]
-                             (assoc {} (:name critic) ;(read-string 
-                                                      (:score critic))))))));)
+                             (assoc {} (:name critic) (:score critic))))))))
 
 (defn shared-critics [data first-game second-game]
   "Find any matching critics for two games."
@@ -282,8 +296,8 @@
     ;(clojure.pprint/pprint 
       ;(get-game-by-name "Sanctum 2")); "http://www.metacritic.com/game/pc/magic-duels-of-the-planeswalkers-2014")
       
-     (clojure.pprint/pprint 
-       (get-game-score "http://www.metacritic.com/game/pc/sanctum-2"))
+     ;(clojure.pprint/pprint 
+      ; (get-game-score "http://www.metacritic.com/game/pc/sanctum-2"))
      
      
      

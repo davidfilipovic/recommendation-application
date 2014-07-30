@@ -103,21 +103,27 @@ th{
 	//background-color:black;
 	background:url('../images/pattern.jpg');
 }
-td{padding:10px;}
-td, th{
-	border-bottom:1px solid white; //#1f1f1f;
+td{
+	padding:10px;
 }
-
-table-game{border-collapse:separate; border-spacing:0; border-top:1px solid white; margin-bottom:28px; width:100px; text-align:left;}
-
-table-game .td {padding:10px; border-bottom:1px solid #1f1f1f;}
-table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-color:#49494b;}
+td, th{
+	border-bottom:1px solid white;
+	border-top:1px solid white; //#1f1f1f;
+	border-right:1px solid white;
+}
 
 /* INFO BOXES ------------------------------------------------------------*/
 
-.info, .success, .warning-g, .error-g, .validation{border:1px solid; margin:10px 0; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;}
-.info{color:#00529B; background-color:#BDE5F8; background-image:url('../images/knobs-icons/knob-info.png');}
-.success{color:#4F8A10; background-color:#DFF2BF; background-image:url('../images/knobs-icons/knob-valid-green.png');}
+.warning-g, .error-g{
+	border:1px solid;
+	margin:10px 0;
+	padding:15px 10px 15px 50px;
+	background-repeat:no-repeat;
+	background-position:10px center;
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+}
 .warning-g{
 	color:#9F6000;
  	background-color:#FEEFB3;
@@ -167,12 +173,12 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	overflow:hidden; 
 	position:relative; 
 	left:0;
-	 width:990px; 
+	width:990px; 
 	height:420px; 
 	margin-bottom:20px; 
 	background:url("../images/slideshow-bg.png") no-repeat;
 	z-index:0;
-	border: 2px solid #f0efeb;
+	border: 3px solid #f0efeb;
 }
 #slideshow #slideshow-link span{display:block; position:absolute; left:20px; top:10px; width:960px; height:320px; z-index:50;}
 #slideshow ul#slides{position:relative; left:20px; top:10px; width:960px; height:322px;}
@@ -202,7 +208,7 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 .front-left-down-col{
 	width:500px;
 	margin:0 0px 0 0px;
-	height: 660px;
+	height: 695px;
 	padding-left: 40px;
 	padding-top: 15px;
     position: relative;
@@ -239,7 +245,7 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	float:right;
 	margin-right:10px; 
 	margin-top:0px; 
-	height: 1400px;
+	height: 1560px;
 	overflow: auto;
 }
 .front-right-col-title{
@@ -254,7 +260,7 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	width:1%;
 	margin:0 0 10 0px;
 	float: left;
-	height: 3000px;
+	height: 1600px;
 	text-align: center;
 	background:url("../images/top-degree.png") no-repeat; 0 -416px;
 	background-size: 10px 2000px; //left top;
@@ -345,7 +351,7 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 .game-name{
 	//display:block; 
     padding-left: 4px; 
-    width: 350px;
+    width: 450px;
     margin-bottom: 2px;
     float: left;
     margin-left: 0px;
@@ -372,10 +378,10 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	color:#49494b;
 	font-size:12px; 
 	text-align:left;
-	width: 50px;
+	width: 100px;
 	float: left;
 	margin-top: 15px;
-	margin-left: 259px;
+	margin-left: 150px;
 	margin-bottom: 10px;
 }
 
@@ -473,15 +479,14 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 }
 .critic-name{
 	display:block; 
-    padding-left: 8px; 
-    width: 295px;
+    padding-left: 15px; 
+    width: 291px;
     margin-bottom: 2px;
     float: right;
-    margin-left: 18px;
+    margin-left: 22px;
 }
 .critic-body{
 	margin-top: 12px;
-	
 }
 .critic-date{
 	color:#adadad;
@@ -507,7 +512,6 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	text-align: center;
 	margin-top: 1px;
 }
-
 .critic-game-score .main{
 	background-color: #D15A04;
 	height: 60px;
@@ -572,6 +576,7 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	height:30px;
 	text-align: left;
 	margin-left:10px;
+	margin-top: 3 px;
 }
 .block-data-h{
 	width:100px;
@@ -581,15 +586,31 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	margin-left:10px;
 }
 .pub-name{
-	color:#666;
+	color:#666; 
     font-size:14px;
-	font-weight:bold;
-	width: 100px;
+	width: 250px;
 	text-decoration:none;
 	margin-top: 2px;
+	font-family:Tahoma,Arial;
  	margin-bottom: 12px;
- 	margin-left: 310px;
- 	padding-top: 12px;
+ 	margin-left: 280px;
+ 	padding-top: 14px;
+}
+.pub-name label{
+	font-weight: bold;
+	color:#49494b;
+}
+.game-dev{
+	
+}
+.game-genre{
+	margin-top: 20px;
+} 
+.game-rating{
+	margin-top: 20px;
+}
+.game-rel-date{
+	margin-top: 20px;
 }
 .blocks-holder li images{border:1px solid gray;}
 
@@ -652,10 +673,6 @@ table-game .th {border-top:0px solid #555; color:#fff; padding:10px; background-
 	z-index:1;
 	background: url(../images/star1.jpg) left top;
 }
-
-/* LEAVE COMMENT -------------------------------------------------------*/
-
-.leave-comment{}
 
 /* FORMS ------------------------------------------------------------*/
 

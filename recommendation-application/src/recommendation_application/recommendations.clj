@@ -26,9 +26,9 @@
             first-factor (- first-square-sum (/ (expt first-sum 2) size))
             second-factor (- second-square-sum (/ (expt second-sum 2) size))
             denominator (Math/sqrt (* first-factor second-factor))]          
-        (if (zero? denominator)
-          0
-          (/ numerator denominator))))))
+        (if-not (zero? denominator)
+          (/ numerator denominator)
+          0)))))
 
 (defn top-matches-for-user 
   "Get the top matches for a critic."

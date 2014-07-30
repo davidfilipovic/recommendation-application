@@ -17,7 +17,7 @@
 
 (defroutes app-routes
   (route/resources "/")
-  (route/not-found "Not Found"))
+  (route/not-found "Sorry, that page does not exists."))
 
 (def app
   (noir-middleware/app-handler [authentication-routes home-routes app-routes]))
