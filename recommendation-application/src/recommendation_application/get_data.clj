@@ -140,16 +140,16 @@
   "Get details about game."
   [link]
   (let [content (hickory-parser-desc link "product_summary" "blurb_collapsed")
-        content1 (hickory-parser-desc link "product_summary" "blurb_expanded")]
-           (str (first (flatten
-                        (map :content
-                           content)))
-                (first (flatten
-                        (map :content
-                           content1)))))) 
+        content1 (hickory-parser-desc link "product_summary" "blurb_expanded")
+        content2 (hickory-parser-desc link "product_summary" "data")
+        data (first (flat content))
+        data1 (first (flat content1))
+        data2 (first (get (second (flat content2)) :content))]
+    (if (nil? (and data  data1))
+    (str data2)
+    (str data data1))))
 
 (def refr (atom 0))
-;(def *refr* (agent 0))
 
 (defn get-game 
   "Retreive game and prepare it for saving"
@@ -164,15 +164,10 @@
                      :rating (get-esrb link)
                      :release-date (get-pub-date link)
                      :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))
-        all-games (lazy-seq (get-all-games))] 
-    #_(do (save-game game)
-          (swap! refr dec))
+        all-games (lazy-seq (get-all-games))]  
     (if-not (not (empty? (filter (fn [a] (= a (:name game)))  (map :name all-games))))
        (do (save-game game)
-         (swap! refr dec)
-         ;(dosync refr dec)
-        ; (send *refr* dec)
-        ))))
+         (swap! refr dec)))))
 
 (def site-tree
   "Parse every page with links into map"
@@ -200,11 +195,8 @@
 (defn tt []
   (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
     (doseq [*agent* agents]
-        (send *agent* get-game)
-        ;(send *refr* inc)
-        (swap! refr inc)
-        ;(dosync refr inc))
-        )))
+        (send *agent* get-game)       
+        (swap! refr inc))))
 
 (defn watch 
   [key agent old new]

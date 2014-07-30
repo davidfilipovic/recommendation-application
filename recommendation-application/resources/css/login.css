@@ -168,14 +168,12 @@ h1 {
 .login input[type=button]:focus{
 	outline: none;
 }
-
 .login .error{
 	color: #E3121B;
 	font-size: 17px;
 	margin: 0 0 20px;
 	width: 460px;
 }
-
 .game {
 	color: black;
 	font: "Goudy Old Style", Garamond, "Big Caslon", "Times New Roman", serif;

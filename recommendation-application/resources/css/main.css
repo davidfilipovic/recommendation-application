@@ -6,8 +6,17 @@ ol{list-style:decimal; padding-left:30px;}
 
 /* GENERAL ------------------------------------------------------------*/
 
-body{line-height:1; color:#49494b; background:#f0efeb; font-family:Tahoma,Arial,Helvetica,sans-serif; font-size:100%; font-size:14px;}
-a{color:#42c8f4;}
+body{
+	line-height:1;
+	color:#49494b; 
+	background:#f0efeb;
+	font-family:Tahoma,Arial,Helvetica,sans-serif;
+	font-size:100%;
+	font-size:14px;
+}
+a{
+	color:#42c8f4;
+}
 h1{font-size:30px;}
 h2{font-size:28px;}
 h3{font-size:26px;}
@@ -35,7 +44,7 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 	border-bottom:1px solid #fff;
 }
 #home-header{
-	height:203px; 
+	height:215px; 
 	background:#e5e3dc url("../images/pattern5.jpg");
 	border-bottom:1px solid #fff;
 }
@@ -43,6 +52,33 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 	background:url("../images/top-degree.png") repeat-x; 
 	height:100%;
 	width:100%;
+}
+.top-search{
+	position:absolute;
+    top:88px; 
+    right:10px;
+}
+#home-header .search-err{
+	color: #E3121B;
+	font-size: 14px;
+	//margin: 0 0 20px;
+	width: 210px;
+	position: absolute;
+	top:70px; 
+    right:0px;
+    margin-left: 50px;
+}
+#home-header .link{
+	position: absolute;
+	top:46px; 
+    right: 0px;
+	margin-right: 14px;
+	
+}
+#home-header .link a{
+	text-decoration: none;
+	color: #42c8f4;//#999;//#49494b;
+	font-size: 22px;
 }
 #main{
 	width: 100%;
@@ -52,11 +88,7 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 	margin:0 auto;
 	position:relative;
 }
-.top-search{
-	position:absolute;
-	 top:75px; 
-	 right:10px;
-}
+
 .shadow-divider{
 	clear:both; 
 	height:25px; 
@@ -71,6 +103,7 @@ h1, h2, h3, h4, h5, h6{margin-bottom:.0em;}
 ::-webkit-input-placeholder{
    color: black !important; 
 }
+
 
 /* CONTENT ------------------------------------------------------------*/
 
@@ -156,6 +189,10 @@ td, th{
 	margin-top:40px;
 	margin-left:23px;
 }
+.title-holder a{
+	color:#42c8f4;
+	text-decoration: none;
+}
 .title-holder .subtitle{display:block; float:left; font-size:20px; color:#999; margin-top:35px; margin-left:15px;}
 .title-holder .username{
 	display:block;
@@ -178,7 +215,7 @@ td, th{
 	margin-bottom:20px; 
 	background:url("../images/slideshow-bg.png") no-repeat;
 	z-index:0;
-	border: 3px solid #f0efeb;
+	border: 2px solid #f0efeb;
 }
 #slideshow #slideshow-link span{display:block; position:absolute; left:20px; top:10px; width:960px; height:320px; z-index:50;}
 #slideshow ul#slides{position:relative; left:20px; top:10px; width:960px; height:322px;}
@@ -193,6 +230,8 @@ td, th{
 #slideshow #next:hover{background-position:-249px -343px;}
 
 /* GAME PAGE ------------------------------------------------------------*/
+
+#all-div{}
 
 .home-content{
 	position:relative; 
@@ -245,7 +284,7 @@ td, th{
 	float:right;
 	margin-right:10px; 
 	margin-top:0px; 
-	height: 1560px;
+	height: 1400px;
 	overflow: auto;
 }
 .front-right-col-title{
@@ -257,10 +296,11 @@ td, th{
 	margin-left: 0px;
 }
 .front-middle-coll{
-	width:1%;
+	width:2%;
 	margin:0 0 10 0px;
 	float: left;
 	height: 1600px;
+	padding-left: 5px;
 	text-align: center;
 	background:url("../images/top-degree.png") no-repeat; 0 -416px;
 	background-size: 10px 2000px; //left top;

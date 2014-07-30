@@ -24,15 +24,22 @@
                            [:div#searchsubmit
                             (submit-button {:name "submit", :id "searchsubmit"} "")])]])
 
+(defn verify-search [game]
+  (if-not (empty? (filter (fn [x] (= x game)) (map :name (get-all-games))))
+    (redirect (str "/games/" game "#all-div"))
+    (do
+      (session/flash-put! :wrong-search "Sorry, that game does not exists.")
+      (redirect (str "/games/" (session/get :game))))))
+
 (defn get-game1 [name]
   (let [game (get-game-by-name name)]
     game))
 
-(defn- get-reviews
+(defn get-reviews
   [game-name]
   (let [game (get-game1 game-name)
-        reviews  ;(sort-by :date 
-        (reverse (game :critics))]
+        reviews  (reverse (sort-by :date  
+                                  (game :critics)))]
     (for [review reviews]
       [:div.games-list
        [:br]
@@ -56,8 +63,7 @@
        [:img {:src img :class "thumb"}]]
       [:li.block-data 
        [:div.critic-game-score
-        [:div.main ;(map read-string
-                        (game :score)]]]   ;;zameni
+        [:div.main (game :score)]]]   
       [:li.block-data-h
        (str "Based on " (count (game :critics)) " critics reviews.")]]
      [:tr
@@ -73,67 +79,7 @@
       [:div.game-rel-date
        [:label "Release date: "] (game :release-date)]]]))
 
-(defn list-of-games 
-  [page]
-  (let [games (partition 10 (get-all-games))
-        last-page (count games)]
-    [:div#genId
-     [:p.clear]
-     [:div.headline "List of all games"]
-     [:div.shadow-divider]
-     [:div.list-all
-      [:div.front-left-col-games  
-       (for [game (butlast (nth games (dec page)))]
-         (let [img (game :picture)]
-           [:div.games-list-left
-            [:ul.image-holder
-             [:li.block
-              [:a {:href (str "/games/" (game :name))}
-               [:img {:src img :class "thumb"}]]]]
-            [:div.game-name 
-             (game :name)] 
-            [:div.game-date 
-             (game :release-date)]
-            [:br][:br][:br]
-            [:div.game-score           
-                  (game :score)]]))
-       (let [game
-             (last
-               (nth games (dec page)))
-             img (game :picture)]
-         [:div.games-list-left-last
-          [:ul.image-holder
-           [:li.block
-            [:a {:href (str "/games/" (game :name))}
-             [:img {:src img :class "thumb"}]]]]
-          [:div.game-name 
-           (game :name)] 
-          [:div.game-date 
-           (game :release-date)]
-          [:br][:br][:br]
-          [:div.game-score
-           (game :score)]])]
-      
-      [:p {:class "clear"}]
-      [:div.pager
-       [:ul
-        {:class "portfolio-pager"}       
-        [:div.first
-         [:a               
-          {:href "/home&1#genId"} "First"]]       
-        [:div.previous
-         (if-not (= 1 page)
-           [:a
-            {:href (str "/home" "&" (dec page) "#genId")}])]      
-        [:div.middle
-         page]          
-        [:div.next
-         (if-not (= page last-page)
-           [:a
-            {:href (str "/home" "&" (inc page) "#genId")}])]             
-        [:div.last
-         [:a
-          {:href (str "/home&" last-page "#genId")} "Last"]]]]]]))
+
 
 (def date-form 
   (format/formatter "MMM dd, yyyy"))
@@ -179,7 +125,81 @@
           (session/remove! :rating)
           (session/remove! :error-message-rev)
           (session/flash-put! :sort 1)
-          (redirect (str "/games/" (game :name))))))))
+          (redirect (str "/games/" (game :name) "#all-div")))))))
+
+
+
+(defn pagination [page last-page]
+  [:div.pager
+         [:ul
+          {:class "portfolio-pager"}       
+          [:div.first
+           [:a               
+            {:href "/home&1#genId"} "First"]]       
+          [:div.previous
+           (if-not (= 1 page)
+             [:a
+              {:href (str "/home" "&" (dec page) "#genId")}])]      
+          [:div.middle
+           page]          
+          [:div.next
+           (if-not (= page last-page)
+             [:a
+              {:href (str "/home" "&" (inc page) "#genId")}])]             
+          [:div.last
+           [:a
+            {:href (str "/home&" last-page "#genId")} "Last"]]]])
+
+(defn list-of-games 
+  [page]
+  (let [games (partition 10 (get-all-games))
+        last-page (count games)]
+    (if-not (empty? games)
+      [:div#genId
+       [:p.clear]
+       [:div.headline (str "List of all games" (count (get-all-games)))]
+       [:div.shadow-divider]
+       [:div.list-all
+        [:div.front-left-col-games  
+         (for [game (butlast (nth games (dec page)))]
+           (let [img (game :picture)]
+             [:div.games-list-left
+              [:ul.image-holder
+               [:li.block
+                [:a {:href (str "/games/" (game :name) "#all-div")}
+                 [:img {:src img :class "thumb"}]]]]
+              [:div.game-name 
+               (game :name)] 
+              [:div.game-date 
+               (game :release-date)]
+              [:br][:br][:br]
+              [:div.game-score
+               (game :score)]]))
+         (let [game (last
+                      (nth games (dec page)))
+               img (game :picture)]
+           [:div.games-list-left-last
+            [:ul.image-holder
+             [:li.block
+              [:a {:href (str "/games/" (game :name) "#all-div")}
+               [:img {:src img :class "thumb"}]]]]
+            [:div.game-name 
+             (game :name)] 
+            [:div.game-date 
+             (game :release-date)]
+            [:br][:br][:br]
+            [:div.game-score
+             (game :score)]])]
+        
+        [:p {:class "clear"}]
+        (pagination page last-page)]]
+      
+      [:div.genId
+       [:p.clear]
+       [:div.headline (str "There are no games in database currently. Please refresh the page. " (count (get-all-games) )) ]
+       [:div.shadow-divider]])))
+
+
 
 (defn show-recommendations [game-name]
   "Get recommendations and show on the page."
@@ -190,9 +210,7 @@
          (let [game (get-game-by-name (first name))
                src (game :picture)
                g-name (game :name)]
-             [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]
-             ))])))
-
+             [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]))])))
 
 (defn right-col 
   [right-content]
@@ -204,13 +222,10 @@
   [:div.front-right-col-games
    right-content]])
 
-
-
 (defn left-col 
   [;recommendations
    left-content 
-   add-rev
-   ]
+   add-rev]
   [:div.front-left-col
    [:div.bullet-title
     [:div.big "Game"]
@@ -218,9 +233,8 @@
    left-content
    [:div.headline-h "People who liked this game, also liked: "]
    ;recommendations
-   [:div.headline-h "Add review"]
-   add-rev
-   ])
+  [:div.headline-h "Add review"]
+  add-rev])
 
 (defn show-add-review-box [game]
   (form-to [:post "/addnewreview"]
@@ -247,175 +261,120 @@
                [:div.warning-g
                 [:label (session/get :error-message-rev)]]])
              [:p               
-              (submit-button {:name "submit", :id "submit"} "Add")
-               ]]]))
+              (submit-button {:name "submit", :id "submit"} "Add")]]]))
 
-(defn foot []
-   [:div#footer
-        [:div.degree]]  
-       [:div#bottom
-        [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]])
 
-(defn body []
+
+
+(def head
+  [:head
+   [:meta {:charset "utf=8"}]
+   (include-css "/css/main.css")])
+
+(defn header [user]
+  [:div#home-header
+   [:div.degree
+    [:div.wrapper
+     [:div.title-holder
+      [:div.title "Games recommendation"]
+      [:div.username (str "Wellcome, " user ". ")
+       (link-to "/logout" "Logout")]]
+     [:div.link [:a {:href "/home"} "All games"]]
+     [:div.search-err (session/flash-get :wrong-search)]
+     (identity search-box)]]])
+
+(def gallery 
+  [:div {:id "slideshow"}
+   [:img {:src "/images/arthas.jpg" :width "990px"}]])
+
+(def footer
+  '([:div#footer
+     [:div.degree]]  
+     [:div#bottom
+      [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]))
+
+(defn body-list [user page]
   [:body      
-   [:div#home-header
-    [:div.degree
-     [:div.wrapper
-      [:div.title-holder
-       [:div.title "Games recommendation"]
-       [:div.username ;(str "Wellcome, " user ". ")
-        (link-to "/logout" "Logout")]]
-      (identity search-box)]]]   
+   (header user)
+   [:div#main    
+    [:div.wrapper
+     [:div.home-content
+      (identity gallery)
+      (list-of-games page)]]] 
+   (identity footer)])
+
+(defn body-game [user left-content right-content add-rev]
+  [:body      
+   (header user)
    [:div#main    
     [:div.wrapper
      [:div.home-content        
-      [:div
-       {:id "slideshow"}
-       [:img {:src "/images/arthas.jpg" :width "990px"}]]
-      
-      ; [:div.headline (session/get :game)] 
-      ;[:div.shadow-divider]
-     ; (list-of-games page)             
-      
-      #_(left-col ;recommendations 
-                  left-content 
-                  add-rev
-                  )        
-      ;[:div.front-middle-coll]
-      ;(right-col right-content)
-      ]]]
-       
-   [:div#footer
-    [:div.degree]]
-   
-   [:div#bottom
-    [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]])
+      (identity gallery)
+      [:div#all-div
+      [:p.clear]
+      [:div.headline (session/get :game)] 
+      [:div.shadow-divider]
+      (left-col ;recommendations 
+                left-content 
+                add-rev)        
+      [:div.front-middle-coll]
+      (right-col right-content)]]]] 
+   (identity footer)])
+
 
 (defn layout 
-  [;recommendations 
-  ;left-content
-  ; right-content
-  ; add-rev
-   page
-   ]  
-  (html5   
-    [:head
-     [:meta {:charset "utf=8"}]
-     (include-css "/css/main.css")]
-      
-    (let [user (session/get :username)]     
-      [:body
-       
-       [:div#home-header
-        [:div.degree
-         [:div.wrapper
-          [:div.title-holder
-             [:div.title "Games recommendation"]
-             [:div.username (str "Wellcome, " user ". ")
-              (link-to "/logout" "Logout")]]
-          (identity search-box)]]]
-       
-       [:div#main
-        
-        [:div.wrapper
-         [:div.home-content  
-          
-          [:div
-           {:id "slideshow"}
-           [:img {:src "/images/arthas.jpg" :width "990px"}]]
-          
-         ; [:div.headline (session/get :game)] 
-          ;[:div.shadow-divider]
-           (list-of-games page)             
-          
-          #_(left-col ;recommendations 
-                     left-content 
-                     add-rev
-                     )        
-          ;[:div.front-middle-coll]
-          ;(right-col right-content)
-          ]]]
-       
-       [:div#footer
-        [:div.degree]]
-       
-       [:div#bottom
-        [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]])))
-
-
+  ([;recommendations 
+    left-content
+    right-content
+    add-rev] 
+    (html5
+      (identity head)
+      (let [user (session/get :username)] 
+        (body-game user left-content right-content add-rev))))
+  ([page]  
+    (html5   
+      (identity head)
+      (let [user (session/get :username)]     
+        (body-list user page)))))
 
 (defn show-game [game]
-  #_(layout 
-  ;(clojure.pprint/pprint
-
-  
-  
-  
-  ;(show-recommendations game)    
-
-  (get-game-information game)
-  
-  (get-reviews game)
-  
-  (show-add-review-box game)
-  
-  
-  ))  
-  
- ; (clojure.pprint/pprint 
-  ;(map read-string 
-  ;(get-game-by-name "Diablo"))  
-  ;(save-game diablo)
-  ;
-  ; 
-   ;(clojure.pprint/pprint(format/show-formatters))
-   ;(clojure.pprint/pprint (as-hiccup r)))
-   
-
-
+  (layout 
+    ;(show-recommendations game)    
+    (get-game-information game)
+    (get-reviews game)
+    (show-add-review-box game)))  
 
 (defn show-page [page]
   (layout    
     page))
 
 
-(defn home-page1 []
-  (layout1/common   
-    ;
+  (defn home-page1 []
+    (layout1/common   
     ;(clojure.pprint/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))   
-   ;(clojure.pprint/pprint (game-critics)   
-   
-   ; (aa)    
-   
-   ;(tt)
-   
-   #_(clojure.pprint/pprint
-      (map :score (get-all-games))); "http://www.metacritic.com/game/pc/dota-2"))
-  
-   ;(get-game "http://www.metacritic.com/game/pc/sanctum-2")  
-    ;(clojure.pprint/pprint (take 5 @get-link-for-every-game))   
-   ;(for [game (take 10 (get-all-games))]
-     ;(into {} (:critics game)))  
-     
-     
-     ;(clojure.pprint/pprint 
-     ; (take 15 (recommend-games-for-game "Starcraft II: Wings of Liberty")))
-      
-   
-      ;(clojure.pprint/pprint (game-critics));(get-game-by-name "Obsidian"))
-      
-      ;(pearson-correlation data2  "Lisa Rose"   "Gene Seymour"))
-    ; (clojure.pprint/pprint (get-game-by-name  "EverQuest: Gates of Discord"))
-     
-     
-    [:h1 "Number of games imported: "]
-     [:h1 (count (get-all-games))]))
+        ;(clojure.pprint/pprint (game-critics)     
+        ; (aa)    
+        ;(tt) 
+    
+        ;(clojure.pprint/pprint (get-summary-details "http://www.metacritic.com/game/pc/joint-operations-typhoon-rising"))
+        #_(clojure.pprint/pprint
+        (map :score (get-all-games))); "http://www.metacritic.com/game/pc/dota-2"))  
+        ;(get-game "http://www.metacritic.com/game/pc/sanctum-2")  
+        ;(clojure.pprint/pprint (take 5 @get-link-for-every-game))   
+        ;(for [game (take 10 (get-all-games))]
+        ;(into {} (:critics game)))  
+        ;(clojure.pprint/pprint 
+        ; (take 15 (recommend-games-for-game "Starcraft II: Wings of Liberty")))  
+        ;(clojure.pprint/pprint (game-critics));(get-game-by-name "Obsidian"))     
+        ;(pearson-correlation data2  "Lisa Rose"   "Gene Seymour"))
+        ; (clojure.pprint/pprint (get-game-by-name  "EverQuest: Gates of Discord"))   
+        [:h1 "Number of games imported: "]
+    [:h1 (count (get-all-games))]))
 
 (defroutes home-routes
-  #_(GET "/home" [] (do (session/put! :game "Sanctum 2")
-                      (show-game "Sanctum 2")))
+  (GET "/home" [] (show-page 1))
   (GET "/home&:page" [page] (show-page (Integer/valueOf page)))
-  (GET "/home" [] (home-page1))
+  #_(GET "/home" [] (home-page1))
   (GET "/logout" [] (logout))
   (GET "/games/:game" [game] 
        (do (session/put! :game game)
@@ -426,8 +385,6 @@
   (POST "/addnewreview" 
         [title review]  
         (add-review-to-site title (session/get :rating) review))
-  (POST "/games" [game]
-        (redirect (str "/games/" game))))
-
+  (POST "/games" [game] (verify-search game)))
 
 

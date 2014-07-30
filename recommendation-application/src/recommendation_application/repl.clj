@@ -5,6 +5,7 @@
         [ring.middleware.reload :only [wrap-reload]]
         [ring.middleware.stacktrace :only [wrap-stacktrace]]
         [ring.middleware.params :only [wrap-params]]
+        [recommendation-application.get-data  :only [tt]]
         [recommendation-application.models.database :only [init-db empty-db]])
   (:require [clojure.data.json :as json]
             [noir.session :as session]))
@@ -44,4 +45,5 @@
 
 (defn -main [& args]
   (init-db)
+  (tt)
   (start-server))
