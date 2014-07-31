@@ -12,8 +12,8 @@
                  [com.novemberain/monger "2.0.0"]
                  [hickory "0.5.3"]
                  [clj-http "0.9.2"]
-                 [org.clojure/data.json "0.2.5"]
                  [clojure-soup "0.0.1"]
                  [clj-soup/clojure-soup "0.1.1"]
-                 [clj-time "0.7.0"]]
+                 [clj-time "0.7.0"]
+                 [org.clojure/math.numeric-tower "0.0.4"]]
   :main recommendation-application.repl)

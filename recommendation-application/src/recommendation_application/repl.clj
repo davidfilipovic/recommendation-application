@@ -45,5 +45,5 @@
 
 (defn -main [& args]
   (init-db)
-  (tt)
+  ;(tt)
   (start-server))

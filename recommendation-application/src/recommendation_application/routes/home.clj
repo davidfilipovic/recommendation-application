@@ -1,10 +1,10 @@
 (ns recommendation-application.routes.home
   (:use [recommendation-application.get-data :only [home-page]]
         [recommendation-application.routes.authentication :only [logout]]
-        [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games]]
-        [recommendation-application.recommendations :only [recommend-games-for-game
-                                                           pearson-correlation]]
+        [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games drop-all-data]]
+        [recommendation-application.recommendations :only [recommend-games-for-game pearson-correlation]]
         recommendation-application.get-data                                       
+        
         [hiccup.form :only [form-to label text-area submit-button text-area text-field]]     
         [clj-time.core :only [now]]
         hickory.core)
@@ -13,6 +13,8 @@
             [noir.session :as session]
             [hiccup.element :refer :all]
             [clojure.string :as string]
+            ;[org.clojure/math.numeric-tower :refer :all]
+            [clojure.math.numeric-tower :as math]
             [recommendation-application.views.layout :as layout1]
             [clj-time.format :as format]
             [compojure.core :refer [defroutes GET POST]]))
@@ -157,7 +159,7 @@
     (if-not (empty? games)
       [:div#genId
        [:p.clear]
-       [:div.headline (str "List of all games" (count (get-all-games)))]
+       [:div.headline (str "List of all games " (count (get-all-games)))]
        [:div.shadow-divider]
        [:div.list-all
         [:div.front-left-col-games  
@@ -169,7 +171,8 @@
                 [:a {:href (str "/games/" (game :name) "#all-div")}
                  [:img {:src img :class "thumb"}]]]]
               [:div.game-name 
-               (game :name)] 
+               [:a {:href (str "/games/" (game :name) "#all-div")}
+                (game :name)]]
               [:div.game-date 
                (game :release-date)]
               [:br][:br][:br]
@@ -263,9 +266,6 @@
              [:p               
               (submit-button {:name "submit", :id "submit"} "Add")]]]))
 
-
-
-
 (def head
   [:head
    [:meta {:charset "utf=8"}]
@@ -291,7 +291,7 @@
   '([:div#footer
      [:div.degree]]  
      [:div#bottom
-      [:div.wrapper (str "© Copyright 2014. All Rights Reserved")]]))
+      [:div.wrapper "© Copyright 2014. All Rights Reserved"]]))
 
 (defn body-list [user page]
   [:body      
@@ -303,7 +303,8 @@
       (list-of-games page)]]] 
    (identity footer)])
 
-(defn body-game [user left-content right-content add-rev]
+(defn body-game [;recommendations
+                 user left-content right-content add-rev]
   [:body      
    (header user)
    [:div#main    
@@ -330,12 +331,16 @@
     (html5
       (identity head)
       (let [user (session/get :username)] 
-        (body-game user left-content right-content add-rev))))
+        (body-game
+          ;recommendations 
+          user left-content right-content add-rev)
+        )))
   ([page]  
     (html5   
       (identity head)
       (let [user (session/get :username)]     
-        (body-list user page)))))
+        (body-list user page)
+        ))))
 
 (defn show-game [game]
   (layout 
@@ -345,17 +350,34 @@
     (show-add-review-box game)))  
 
 (defn show-page [page]
-  (layout    
-    page))
-
+ (do (tt)
+   (layout page)))
 
   (defn home-page1 []
     (layout1/common   
     ;(clojure.pprint/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))   
         ;(clojure.pprint/pprint (game-critics)     
         ; (aa)    
-        ;(tt) 
+       
+        ;(get-game "http://www.metacritic.com/game/pc/half-life") 
     
+      ;(time (get-other-inf "http://www.metacritic.com/game/pc/dota-2")))
+        
+     ;(drop-all-data)
+      ;(clojure.pprint/pprint (count (second @get-link-for-every-game)))
+      ;(do (drop-all-data)
+      ;(tt)
+      
+      ;(clojure.pprint/pprint (math/floor 2.6))
+      
+      
+      ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/dota-2"))
+      
+        ;(clojure.pprint/pprint (time (get-pub "http://www.metacritic.com/game/pc/dota-2")))
+        ;(clojure.pprint/pprint (time (get-genre "http://www.metacritic.com/game/pc/dota-2")))
+        ;(clojure.pprint/pprint (time (get-esrb "http://www.metacritic.com/game/pc/dota-2")))
+        ;(clojure.pprint/pprint (time (get-pub-date "http://www.metacritic.com/game/pc/dota-2")))
+        
         ;(clojure.pprint/pprint (get-summary-details "http://www.metacritic.com/game/pc/joint-operations-typhoon-rising"))
         #_(clojure.pprint/pprint
         (map :score (get-all-games))); "http://www.metacritic.com/game/pc/dota-2"))  
@@ -369,7 +391,8 @@
         ;(pearson-correlation data2  "Lisa Rose"   "Gene Seymour"))
         ; (clojure.pprint/pprint (get-game-by-name  "EverQuest: Gates of Discord"))   
         [:h1 "Number of games imported: "]
-    [:h1 (count (get-all-games))]))
+    [:h1 (count (get-all-games))]
+    ))
 
 (defroutes home-routes
   (GET "/home" [] (show-page 1))

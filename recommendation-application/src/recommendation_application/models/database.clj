@@ -36,12 +36,12 @@
 (defn get-users []
   (mc/find-maps db "users"))
 
+(defn get-game-by-name [name]
+ (mc/find-one-as-map db "games" {:name name}))
+
 (defn save-game
   [game]
   (mc/insert db "games" game))
-
-(defn get-game-by-name [name]
- (mc/find-one-as-map db "games" {:name name}))
 
 (defn get-all [table]
   (mc/find-maps db table))

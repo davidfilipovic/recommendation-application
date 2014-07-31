@@ -40,6 +40,28 @@
            (s/class class))
              (get-page link))))  
 
+(def site-tree
+  "Parse every page with links into map"
+  (for [i (range 5)]
+    (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?page=" i)))
+
+    
+(def get-link-for-every-game
+  "Get every link from every page"
+  (atom
+   (pmap (fn [link]
+                (let [content (s/select 
+                                (s/child 
+                                  (s/class "product_title"))
+                           (get-page link))]
+                  (map #(str "http://www.metacritic.com" %)    
+                       (map :href
+                            (map :attrs
+                                 (map #(get % 1)
+                                      (map :content content)))))))
+              site-tree)))
+
+
 (defn get-critics-reviews-link 
   [link]
   (let [content (hickory-parser-desc link "nav_critic_reviews" "action")]
@@ -60,7 +82,7 @@
   "Game developer."
   [link]
  (let [content (hickory-parser-desc link "developer" "data")]
-   (first (flat content))))
+ (first (flat content))))
 
 (defn get-genre 
   "Game genre."
@@ -73,6 +95,10 @@
   [link]
  (let [content (hickory-parser-desc link "product_rating" "data")]
    (first (flat content))))
+
+#_(defn get-other-inf [link]
+  (let [content (hickory-parser link "summary_details")]
+    content))
 
 
 (defn get-all-critics-data 
@@ -110,11 +136,11 @@
   "Game score."
   [link]
 	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
-	    (int (/ (first (map read-string
+	    (with-precision 1 (/ (first (map read-string
                         (get 
                           (second 
                             (first 
-                              (map :content content))) :content))) 20))))
+                              (map :content content))) :content))) 20.0))))
 
 (defn get-game-name 
   "Name of the game."
@@ -164,50 +190,45 @@
                      :rating (get-esrb link)
                      :release-date (get-pub-date link)
                      :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))
-        all-games (lazy-seq (get-all-games))]  
-    (if-not (not (empty? (filter (fn [a] (= a (:name game)))  (map :name all-games))))
+        ]  
+    #_(do (save-game game)
+       (swap! refr dec)
+       )
+     (when-not (string? (some #{(:name game)} (map :name (get-all-games))))
        (do (save-game game)
-         (swap! refr dec)))))
+         (swap! refr dec)
+         )
+       )))
 
-(def site-tree
-  "Parse every page with links into map"
-  (for [i (range 10)]
-    (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?page=" i)))
 
-    
-(def get-link-for-every-game
-  "Get every link from every page"
-  (atom
-   (pmap (fn [link]
-                (let [content (s/select 
-                                (s/child 
-                                  (s/class "product_title"))
-                           (get-page link))]
-                  (map #(str "http://www.metacritic.com" %)    
-                       (map :href
-                            (map :attrs
-                                 (map #(get % 1)
-                                      (map :content content)))))))
-              site-tree)))
 
+#_(defn tt
+  []
+  (dorun (map
+            #(let [agent (agent %)]
+          (send agent get-game)
+          (swap! refr inc)
+           )
+        (drop-last 6 (first @get-link-for-every-game)))))
 
 
 (defn tt []
   (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
     (doseq [*agent* agents]
-        (send *agent* get-game)       
+        (send-off *agent* get-game)
+        (apply await-for 5000 agents)
         (swap! refr inc))))
 
 (defn watch 
-  [key agent old new]
-  (if (= 200 new)
+  [key agents old new]
+  (if (= 120 new)
     (do 
-      (swap! get-link-for-every-game #(rest %))
+      (swap! get-link-for-every-game #(drop 1 %))
       (if-not (empty? @get-link-for-every-game)
         (tt)))))
 
 
-(add-watch refr :key watch)
+(add-watch refr :game watch)
 
 #_(defn aa []
    (doall  (pmap 
