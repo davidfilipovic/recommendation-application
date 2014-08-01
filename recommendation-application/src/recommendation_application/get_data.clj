@@ -42,24 +42,22 @@
 
 (def site-tree
   "Parse every page with links into map"
-  (for [i (range 5)]
-    (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?page=" i)))
+  (for [i (range 10)]
+    (str "http://www.metacritic.com/browse/games/release-date/available/pc/metascore?view=condensed&page=" i)))
 
     
-(def get-link-for-every-game
+(def get-link-for-every-game 
   "Get every link from every page"
   (atom
-   (pmap (fn [link]
-                (let [content (s/select 
-                                (s/child 
-                                  (s/class "product_title"))
-                           (get-page link))]
-                  (map #(str "http://www.metacritic.com" %)    
-                       (map :href
-                            (map :attrs
-                                 (map #(get % 1)
-                                      (map :content content)))))))
-              site-tree)))
+    (pmap (fn [link]
+            (let [content (hickory-parser-desc link "body_wrap" "product_title")]
+              (map #(str "http://www.metacritic.com" %)    
+                   (map :href
+                        (map :attrs
+                             (map #(get % 1)
+                                  (drop-last 6
+                                             (map :content content))))))))
+          site-tree)))
 
 
 (defn get-critics-reviews-link 
@@ -95,10 +93,6 @@
   [link]
  (let [content (hickory-parser-desc link "product_rating" "data")]
    (first (flat content))))
-
-#_(defn get-other-inf [link]
-  (let [content (hickory-parser link "summary_details")]
-    content))
 
 
 (defn get-all-critics-data 
@@ -151,9 +145,8 @@
             (s/tag :head)
             (s/tag :title))
           (get-page link))]
-        (string/replace 
-         (first (first 
-                 (map :content content))) " for PC Reviews - Metacritic" "")));));)
+    (string/replace (first 
+    (first (map :content content))) " for PC Reviews - Metacritic" "")));));)
 
 (defn get-picture-link 
   "Game thumbnail."
@@ -175,8 +168,6 @@
     (str data2)
     (str data data1))))
 
-(def refr (atom 0))
-
 (defn get-game 
   "Retreive game and prepare it for saving"
   [link]
@@ -189,72 +180,24 @@
                      :genre (get-genre link)
                      :rating (get-esrb link)
                      :release-date (get-pub-date link)
-                     :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))
-        ]  
-    #_(do (save-game game)
-       (swap! refr dec)
-       )
+                     :critics (prepare-critics (get-all-critics-data (get-critics-reviews-link link))))]  
      (when-not (string? (some #{(:name game)} (map :name (get-all-games))))
-       (do (save-game game)
-         (swap! refr dec)
-         )
-       )))
+     (save-game game))))
 
-
-
-#_(defn tt
+(defn tt
   []
-  (dorun (map
-            #(let [agent (agent %)]
-          (send agent get-game)
-          (swap! refr inc)
-           )
-        (drop-last 6 (first @get-link-for-every-game)))))
-
-
-(defn tt []
-  (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
-    (doseq [*agent* agents]
-        (send-off *agent* get-game)
-        (apply await-for 5000 agents)
-        (swap! refr inc))))
-
-(defn watch 
-  [key agents old new]
-  (if (= 120 new)
-    (do 
-      (swap! get-link-for-every-game #(drop 1 %))
-      (if-not (empty? @get-link-for-every-game)
-        (tt)))))
-
-
-(add-watch refr :game watch)
-
-#_(defn aa []
-   (doall  (pmap 
-             #(let [agent (agent %)]       
-               (send agent get-game))
-             (first @get-link-for-every-game))))
-
-
-
-
-;   (apply await-for 1000 agents)
-; (doall (map #(deref %) agents))
-
-
-#_(defn aa []
-   (let [agents (doall (map #(agent %) (drop-last 6 (first @get-link-for-every-game))))]
-       (doseq [agent agents] 
-       (send agent get-game))
- ;   (apply await-for 1000 agents)
-    ; (doall (map #(deref %) agents))
-    ))
-
-(defn prepare-base []
-  (drop-all-data)
-  ;(aa)
-  )
+  (for [x (doall @get-link-for-every-game)]
+    (dorun (map
+             #(let [agent (agent %)]
+                (send agent get-game)
+                ;(swap! agenta inc)
+                ;  (dosync (alter my-ref inc))
+                ;(swap! agenta inc)
+                )
+             
+             ;(first @get-link-for-every-game))))
+             x))))
+  
 
 (defn game-critics []
   "Return all critics names along with their rates."
@@ -273,6 +216,8 @@
                  :when (contains? second-critic k)]
              (assoc {} k [(first-critic k) (second-critic k)])))))
 
+(defn ajmo []
+  (tt))
 
 (defn home-page []
   (layout/common 

@@ -4,9 +4,16 @@ body{
 	line-height:1;
 	color:#49494b; 
 	background:#f0efeb;
+	
+	
 	font-family:Tahoma,Arial,Helvetica,sans-serif;
 	font-size:100%;
 	font-size:14px;
+}
+body .o{
+	width: 50%;
+	background: white;
+}
 }
 a{
 	color:#42c8f4;
@@ -131,7 +138,7 @@ th{
 	padding:10px;
 	text-transform:uppercase; 
 	//background-color:black;
-	background:url('../images/pattern.jpg');
+	background:url('../images/pattern5.jpg');
 }
 td{
 	padding:10px;
@@ -178,7 +185,7 @@ td, th{
 	background:url("../images/pattern4") no-repeat;
   	margin-bottom:10px; line-height:1em;
 }
-.title-holder .title{
+.title-holder .title-t{
 	display:block; 
 	float:left;
 	font-size:28px;
@@ -292,7 +299,7 @@ td, th{
 	float:right;
 	margin-right:10px; 
 	margin-top:0px; 
-	height: 1400px;
+	height: 1700px;
 	overflow: auto;
 }
 .front-right-col-title{

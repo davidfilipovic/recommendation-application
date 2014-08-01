@@ -5,7 +5,7 @@
         [ring.middleware.reload :only [wrap-reload]]
         [ring.middleware.stacktrace :only [wrap-stacktrace]]
         [ring.middleware.params :only [wrap-params]]
-        [recommendation-application.get-data  :only [tt]]
+        [recommendation-application.get-data  :only [ajmo]]
         [recommendation-application.models.database :only [init-db empty-db]])
   (:require [clojure.data.json :as json]
             [noir.session :as session]))
@@ -36,7 +36,7 @@
                     :init init
                     :auto-reload? true
                     :destroy destroy
-                    :join true}))
+                    :join false}))
     (println (str "You can view the site at http://localhost:" port))))
 
 (defn stop-server []
@@ -45,5 +45,5 @@
 
 (defn -main [& args]
   (init-db)
-  ;(tt)
+  ;(ajmo)
   (start-server))
