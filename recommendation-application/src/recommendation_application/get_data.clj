@@ -129,12 +129,16 @@
 (defn get-game-score 
   "Game score."
   [link]
-	  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
-	    (with-precision 1 (/ (first (map read-string
-                        (get 
-                          (second 
-                            (first 
-                              (map :content content))) :content))) 20.0))))
+  (let [content (hickory-parser-desc link "metascore_anchor" "xlarge")]
+    (read-string
+      (string/replace
+        (format "%.2f"
+                (with-precision 1 
+                  (/ (first (map read-string
+                                 (get 
+                                   (second 
+                                     (first 
+                                       (map :content content))) :content))) 20.0))) "," "."))))
 
 (defn get-game-name 
   "Name of the game."
@@ -184,7 +188,7 @@
      (when-not (string? (some #{(:name game)} (map :name (get-all-games))))
      (save-game game))))
 
-(defn tt
+(defn retreive-data
   []
   (for [x (doall @get-link-for-every-game)]
     (dorun (map
@@ -215,9 +219,6 @@
            (for [k (keys first-critic)
                  :when (contains? second-critic k)]
              (assoc {} k [(first-critic k) (second-critic k)])))))
-
-(defn ajmo []
-  (tt))
 
 (defn home-page []
   (layout/common 

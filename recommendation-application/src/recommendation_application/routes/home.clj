@@ -3,15 +3,14 @@
         [recommendation-application.routes.authentication :only [logout]]
         [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games drop-all-data]]
         [recommendation-application.recommendations :only [recommend-games-for-game pearson-correlation]]
-        recommendation-application.get-data                                       
+        [recommendation-application.get-data :only [retreive-data]]                                       
         [hiccup.form :only [form-to label text-area submit-button text-area text-field]]     
         [clj-time.core :only [now]]
         hickory.core)
   (:require [hiccup.page :refer [html5 include-css include-js]]
             [noir.response :refer [redirect]]
             [noir.session :as session]
-            [hiccup.element :refer :all]
-          
+            [hiccup.element :refer :all]      
             [clojure.string :as string]
             ;[org.clojure/math.numeric-tower :refer :all]
             [clojure.math.numeric-tower :as math]
@@ -41,8 +40,7 @@
   [game-name]
   (let [game (get-game1 game-name)
         reviews  (reverse ;(sort-by :date  
-                                  (game :critics));)
-        ]
+                                  (game :critics))]
     (for [review reviews]
       [:div.games-list
        [:br]
@@ -206,14 +204,14 @@
 
 (defn show-recommendations [game-name]
   "Get recommendations and show on the page."
-   (let [games (take 15 (recommend-games-for-game game-name))]
-     (if (not= 0 (count games))
-       [:div.front-left-down-col 
-        (for [name games]
+  (let [games (take 15 (recommend-games-for-game game-name))]
+    (if (not= 0 (count games))
+      [:div.front-left-down-col 
+       (for [name games]
          (let [game (get-game-by-name (first name))
                src (game :picture)
                g-name (game :name)]
-             [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]))])))
+           [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]))])))
 
 (defn right-col 
   [right-content]
@@ -235,7 +233,9 @@
     [:div.small "Description"]]
    left-content
    [:div.headline-h "People who liked this game, also liked: "]
-  ; recommendations
+ ;  recommendations
+ (show-recommendations (session/get :game))
+ 
   [:div.headline-h "Add review"]
   add-rev])
 
@@ -277,7 +277,7 @@
    [:div.degree
     [:div.wrapper
      [:div.title-holder
-      [:div.title-t "Games recommendation"]
+      [:div.title-t [:a {:href "/home"} "Games recommendation"]]
       [:div.username (str "Wellcome, " user ". ")
        (link-to "/logout" "Logout")]]
      [:div.link [:a {:href (str "/home" "#genId")} "All games"]]
@@ -295,7 +295,8 @@
       [:div.wrapper "© Copyright 2014. All Rights Reserved"]]))
 
 (defn body-list [user page]
-  [:body     
+  [:body  
+   (retreive-data)   
    (header user)
    [:div#main    
     [:div.wrapper
@@ -323,6 +324,32 @@
       (right-col right-content)]]]] 
    (identity footer)])
 
+#_(defn layout 
+  ([;recommendations 
+     ;left-content
+     ;right-content
+     ;add-rev
+     game
+     ] 
+    (html5
+      (head (session/get :game))
+      (let [user (session/get :username)] 
+        (body-game
+           user
+           (get-game-information game)
+          (get-reviews game)
+          (show-add-review-box game)
+          ;recommendations 
+           ;user left-content right-content add-rev
+           ))))
+  #_([page]  
+    (html5   
+      (head "List of games")
+      (let [user (session/get :username)] 
+        (body-list user page)))))
+
+
+
 (defn layout 
   ([;recommendations 
     left-content
@@ -333,13 +360,11 @@
       (let [user (session/get :username)] 
         (body-game
           ;recommendations 
-          user left-content right-content add-rev)
-        )))
+          user left-content right-content add-rev))))
   ([page]  
     (html5   
       (head "List of games")
       (let [user (session/get :username)] 
-        
         (body-list user page)))))
 
 (defn show-game [game]
@@ -350,79 +375,64 @@
     (show-add-review-box game)))  
 
 (defn show-page [page] 
-  ;(eval ajmo)
-    (layout page))
+  (layout page))
 
 (defn home-page1 []
-    (layout1/common   
+  (layout1/common   
     ;(clojure.pprint/pprint (prepare-critics (get-all-critics-data "http://www.metacritic.com/game/pc/dota-2")))   
-      ;(clojure.pprint/pprint (game-critics)     
-      ; (aa)    
-       
-      ;(get-game "http://www.metacritic.com/game/pc/half-life") 
-    
-    ;(time (get-other-inf "http://www.metacritic.com/game/pc/dota-2")))
-        
-   ;(drop-all-data)
-      
-     
-     
-  ;(clojure.pprint/pprint (count (first @get-link-for-every-game)))
-     
-  ; (clojure.pprint/pprint (second @get-link-for-every-game))
-     
-    
-    
-   ;(do (drop-all-data)
-   (tt)
-
-    
-  ;(clojure.pprint/pprint (get-other-details "http://www.metacritic.com/game/pc/thief-ii-the-metal-age"))
-   
- ; (clojure.pprint/pprint (map flatten (flatten (flatten (identity t)))))
-  
-    
+    ;(clojure.pprint/pprint (game-critics)     
+    ; (aa)    
+    ;(get-game "http://www.metacritic.com/game/pc/half-life") 
+    ;(time (get-other-inf "http://www.metacritic.com/game/pc/dota-2"))
+    ;(drop-all-data)  
+    ;(clojure.pprint/pprint (count (first @get-link-for-every-game))) 
+    ; (clojure.pprint/pprint (second @get-link-for-every-game))
+    ;(do (drop-all-data)
+    ; (tt)
+    ;(clojure.pprint/pprint (get-other-details "http://www.metacritic.com/game/pc/thief-ii-the-metal-age"))
+    ; (clojure.pprint/pprint (map flatten (flatten (flatten (identity t)))))
     #_(clojure.pprint/pprint (dorun (let [agents (doall (map #(agent %) (str "http://www.metacritic.com/game/pc/indiana-jones-and-the-emperors-tomb")))]
-                                     (doseq [agent agents]
-                                       (send agent get-game)))))  
-      
-      #_(doall
-         (map
-            #(let [agent (agent %)]
-          (send agent get-game)
-          (swap! refr inc))
-        (take 10 (first @get-link-for-every-game))))
-      
-    ;(clojure.pprint/pprint (math/floor 2.6))
-      
-  ; (tt)
-      
+                                      (doseq [agent agents]
+                                        (send agent get-game)))))  
+    #_(doall
+        (map
+          #(let [agent (agent %)]
+             (send agent get-game)
+             (swap! refr inc))
+          (take 10 (first @get-link-for-every-game))))   
+    ;(clojure.pprint/pprint (math/floor 2.6))    
+    ; (tt)    
     ;(clojure.pprint/pprint (slurp "http://www.metacritic.com/game/pc/dota-2"))
-
-     
-      
     ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/dota-2"))
-      
-      ;(clojure.pprint/pprint (time (get-pub "http://www.metacritic.com/game/pc/dota-2")))
-      ;(clojure.pprint/pprint (time (get-genre "http://www.metacritic.com/game/pc/dota-2")))
-      ;(clojure.pprint/pprint (time (get-esrb "http://www.metacritic.com/game/pc/dota-2")))
-      ;(clojure.pprint/pprint (time (get-pub-date "http://www.metacritic.com/game/pc/dota-2")))
+    
+    
+    
+  (time (clojure.pprint/pprint (recommend-games-for-game "Star Wars: The Old Republic")))
         
-      ;(clojure.pprint/pprint (get-summary-details "http://www.metacritic.com/game/pc/joint-operations-typhoon-rising"))
-      #_(clojure.pprint/pprint
+    
+    
+    ;(retreive-data)
+    
+    
+    ;(clojure.pprint/pprint (time (get-pub "http://www.metacritic.com/game/pc/dota-2")))
+    ;(clojure.pprint/pprint (time (get-genre "http://www.metacritic.com/game/pc/dota-2")))
+    ;(clojure.pprint/pprint (time (get-esrb "http://www.metacritic.com/game/pc/dota-2")))
+    ;(clojure.pprint/pprint (time (get-pub-date "http://www.metacritic.com/game/pc/dota-2")))
+    
+    ;(clojure.pprint/pprint (get-summary-details "http://www.metacritic.com/game/pc/joint-operations-typhoon-rising"))
+    #_(clojure.pprint/pprint
         (map :score (get-all-games))); "http://www.metacritic.com/game/pc/dota-2"))  
-      ;(get-game "http://www.metacritic.com/game/pc/sanctum-2")  
-      ;(clojure.pprint/pprint (take 5 @get-link-for-every-game))   
-      ;(for [game (take 10 (get-all-games))]
-      ;(into {} (:critics game)))  
-      ;(clojure.pprint/pprint 
-      ; (take 15 (recommend-games-for-game "Starcraft II: Wings of Liberty")))  
-      ;(clojure.pprint/pprint (game-critics));(get-game-by-name "Obsidian"))     
-      ;(pearson-correlation data2  "Lisa Rose"   "Gene Seymour"))
-      ; (clojure.pprint/pprint (get-game-by-name  "EverQuest: Gates of Discord"))   
-      [:h1 "Number of games imported: "]
-    [:h1 (count (get-all-games))]
-  ))
+    ;(get-game "http://www.metacritic.com/game/pc/sanctum-2")  
+    ;(clojure.pprint/pprint (take 5 @get-link-for-every-game))   
+    ;(for [game (take 10 (get-all-games))]
+    ;(into {} (:critics game)))  
+    ;(clojure.pprint/pprint 
+    ; (take 15 (recommend-games-for-game "Starcraft II: Wings of Liberty")))  
+    ;(clojure.pprint/pprint (game-critics));(get-game-by-name "Obsidian"))     
+    ;(pearson-correlation data2  "Lisa Rose"   "Gene Seymour"))
+    ; (clojure.pprint/pprint (get-game-by-name  "EverQuest: Gates of Discord"))   
+    [:h1 "Number of games imported: "]
+    [:h1 (count (get-all-games))]))
 
 (defroutes home-routes
   (GET "/home" [] (show-page 1))
