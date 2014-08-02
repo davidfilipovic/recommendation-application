@@ -6,9 +6,9 @@
   
   When the application is started, a user have to register or login. Initialy in database is inserted one user, admin, with username **admin**, and password **admin**, so you can log in with these credentials.  After successful registration, Home page is shown, and because initialy there are no games in database, no game will be shown in minute or two, depending on users connection speed. After the page had been refreshed a couple of times, the list of games will be shown. After that, user can visit every game page, read about the game, and rate it.     
 
-One note: in application are included *all* types of games that are implemented for playing on PC, and the are exported from [Metasritics](http://www.metacritic.com)site.
+One note: in application are included *all* types of games that are implemented for playing on PC, and the are exported from [Metasritic](http://www.metacritic.com) site.
 
-  If, in any case, you receive a "Slow down, 429 Too Many Requests" error, just refresh the page again. This is because Metacritics have some kind of restricting policy related to crawling pages. 
+  If, in any case, you receive a "Slow down, 429 Too Many Requests" error, just refresh the page again. This is because Metacritic have some kind of restricting policy related to crawling pages. 
 
 ## Instaling instructions
 
