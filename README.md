@@ -1,13 +1,14 @@
-## Recommendation application for video games on PC, built in Clojure. 
+## Recommendation application for PC video games, built in Clojure. 
 
-Tehnique used in this application is called collaborative filtering.
-Advantage of this technique is that the system does not rely on the values for the feature variables of its items,
-and consequently such a system does not need to know about the characteristics of
-the items that are provided by it.
+  If you are bored with games you are currently playing and want to play something new and wild, this application is right choice for you. Built on using technique called collaborative filtering, it provides you a way to find new games based on your rating of games that you have already played, and accordingly rated.
 
-One note: in application are included *all* types of games that are implemented for playing on PC.
+  Advantage of technique used in this application is that the system does not rely on the values for the feature variables of its items (as in content-based filtering), and consequently such a system does not need to know about the characteristics of the items that are provided by it. There are a couple of algorithms in which collaborative filtering can be implemented, such as Slope One, Nearest Neighbor algorithm and Pearson correlation score, which is used in this application. 
+  
+  When the application is started, a user have to register or login. Initialy in database is inserted one user, admin, with username **admin**, and password **admin**, so you can log in with these credentials.  After successful registration, Home page is shown, and because initialy there are no games in database, no game will be shown in minute or two, depending on users connection speed. After the page had been refreshed a couple of times, the list of games will be shown. After that, user can visit every game page, read about the game, and rate it.     
 
-If, in any case, you receive a "Slow down, 429 Too Many Requests" error, just refresh the page again. This is because Metacritics have some kind of restricting policy related to crawling pages. 
+One note: in application are included *all* types of games that are implemented for playing on PC, and the are exported from [Metasritics](http://www.metacritic.com)site.
+
+  If, in any case, you receive a "Slow down, 429 Too Many Requests" error, just refresh the page again. This is because Metacritics have some kind of restricting policy related to crawling pages. 
 
 ## Instaling instructions
 
@@ -70,6 +71,8 @@ Dependency: [hickory "0.5.3"]
 
   The same as Web Development in Clojure, this book have also appeared in 2014, and covers a plenty of techniques and algorithms for machine learning and their implementations in Clojure. Among other things, in this book are described techniques for building neural networks, understanding linear regression, categorizing and clustering data, working with matrices, etc. Of course, in seperate chapter there is explanation of recommendation system, which is divided into two sections, first about content-based filtering and second about collaborative filtering which is used in my application.    
 
+##License
 
+Distributed under the Eclipse Public License, the same as Clojure.
 
 
