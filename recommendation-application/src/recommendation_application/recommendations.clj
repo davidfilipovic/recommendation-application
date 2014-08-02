@@ -47,21 +47,10 @@
   [game-name]
   (let [critics (game-critics)
         games-names (keys critics)
-        ;other-games (pmap #(let [g %] (if-not (= g game-name))) games-names);(filter #(not= game-name %) games-names)
         similar-games (pmap #(if-not (= game-name %)
-                               (pearson-correlation critics game-name %)) games-names)
-        fm (zipmap games-names similar-games)
-        d  (into {} (filter second fm))
-        fm1 (into {} (filter #(> (second %) 0) d))
-        ] 
-
-     (into (sorted-map-by (fn [key1 key2] (compare (fm1 key2) (fm1 key1)))) fm1)
-   ; d
-    ))
-    ;(into (sorted-map-by (fn [key1 key2] (compare (key2 my-map) (key1 my-map)))) my-map)
-    ;final-map
-    ;similar-games
-    #_(sort-by first;val > 
-               (into {} ;(filter (fn [[key value]] (if (< 0 value)
-                                                         ;(dissoc final-map key))) 
-                                                         final-map));));)
+                               (pearson-correlation critics game-name %)) 
+                            games-names)
+        zip (zipmap games-names similar-games)
+        prepare  (into {} (filter second zip))
+        final-map (into {} (filter #(> (second %) 0) prepare))] 
+    (into (sorted-map-by (fn [key1 key2] (compare (final-map key2) (final-map key1)))) final-map)))

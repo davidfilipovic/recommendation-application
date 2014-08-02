@@ -1,9 +1,8 @@
 (ns recommendation-application.routes.home
-  (:use [recommendation-application.get-data :only [home-page]]
-        [recommendation-application.routes.authentication :only [logout]]
+  (:use [recommendation-application.routes.authentication :only [logout]]
         [recommendation-application.models.database :only [get-game-by-name update-game save-game get-all-games drop-all-data]]
         [recommendation-application.recommendations :only [recommend-games-for-game pearson-correlation]]
-        [recommendation-application.get-data :only [retreive-data]]                                       
+        recommendation-application.get-data                                     
         [hiccup.form :only [form-to label text-area submit-button text-area text-field]]     
         [clj-time.core :only [now]]
         hickory.core)
@@ -12,8 +11,6 @@
             [noir.session :as session]
             [hiccup.element :refer :all]      
             [clojure.string :as string]
-            ;[org.clojure/math.numeric-tower :refer :all]
-            [clojure.math.numeric-tower :as math]
             [recommendation-application.views.layout :as layout1]
             [clj-time.format :as format-time]
             [compojure.core :refer [defroutes GET POST]]))
@@ -32,17 +29,17 @@
       (session/flash-put! :wrong-search "Sorry, that game does not exists.")
       (redirect (str "/games/" (session/get :game))))))
 
-(defn get-game1 [name]
+(defn retreive-game [name]
   (let [game (get-game-by-name name)]
     game))
 
 (defn get-reviews
   [game-name]
-  (let [game (get-game1 game-name)
-        reviews  (reverse ;(sort-by :date  
-                                  (game :critics))]
-    (for [review reviews]
-      [:div.games-list
+  (let [game (retreive-game game-name)]
+    (if (= 1 (session/flash-get :sort))
+      (let [reviews (reverse (game :critics))]
+        (for [review reviews]
+        [:div.games-list
        [:br]
        [:div.critic-name
         (review :name)]
@@ -52,11 +49,24 @@
         (review :body)]
        [:br]
        [:div.critic-game-score (review :score)]
-       [:br]])))
+       [:br]]))
+      (let [reviews (sort-by :score > (game :critics))]                                
+        (for [review reviews]
+          [:div.games-list
+           [:br]
+           [:div.critic-name
+            (review :name)]
+           [:div.critic-date (review :date)]
+           [:br]
+           [:div.critic-body
+            (review :body)]
+           [:br]
+           [:div.critic-game-score (review :score)]
+           [:br]])))))
 
 (defn get-game-information
   [game-name]
-  (let [game (get-game1 game-name)
+  (let [game (retreive-game game-name)
         img (game :picture)]
     [:table
      [:ul.blocks-holder
@@ -156,7 +166,8 @@
     (if-not (empty? games)
       [:div#genId
        [:p.clear]
-       [:div.headline (str "List of all games " (count (get-all-games)))]
+       [:div.headline {:style "margin-bottom: 15px;"}(str "List of all games")]
+       [:div.headline {:style "margin-top: 5px;"}  (str "There are "(count (get-all-games)) " games currently in database")]
        [:div.shadow-divider]
        [:div.list-all
         [:div.front-left-col-games  
@@ -184,8 +195,8 @@
               [:a {:href (str "/games/" (game :name) "#all-div")}
                [:img {:src img :class "thumb"}]]]]
             [:div.game-name 
-              [:a {:href (str "/games/" (game :name) "#all-div")}
-             (game :name)]] 
+             [:a {:href (str "/games/" (game :name) "#all-div")}
+              (game :name)]] 
             [:div.game-date 
              (game :release-date)]
             [:br][:br][:br]
@@ -200,8 +211,6 @@
        [:div.headline (str "There are no games in database currently. Please refresh the page. " (count (get-all-games) )) ]
        [:div.shadow-divider]])))
 
-
-
 (defn show-recommendations [game-name]
   "Get recommendations and show on the page."
   (let [games (take 15 (recommend-games-for-game game-name))]
@@ -211,7 +220,7 @@
          (let [game (get-game-by-name (first name))
                src (game :picture)
                g-name (game :name)]
-           [:a {:href (str "/games/" g-name)}[:img {:src src :class "thumb-d"}]]))])))
+           [:a {:href (str "/games/" g-name "#all-div")}[:img {:src src :class "thumb-d"}]]))])))
 
 (defn right-col 
   [right-content]
@@ -224,20 +233,16 @@
    right-content]])
 
 (defn left-col 
-  [;recommendations
-   left-content 
-   add-rev]
+  [left-content add-rev]
   [:div.front-left-col
    [:div.bullet-title
     [:div.big "Game"]
     [:div.small "Description"]]
    left-content
    [:div.headline-h "People who liked this game, also liked: "]
- ;  recommendations
- (show-recommendations (session/get :game))
- 
-  [:div.headline-h "Add review"]
-  add-rev])
+   (show-recommendations (session/get :game))
+   [:div.headline-h "Add review"]
+   add-rev])
 
 (defn show-add-review-box [game]
   (form-to [:post "/addnewreview"]
@@ -266,11 +271,46 @@
              [:p               
               (submit-button {:name "submit", :id "submit"} "Add")]]]))
 
+
+(def slide
+  [:script
+        {:type "text/javascript"}
+        "\n// <![CDATA[\nvar flashvars = {};
+         flashvars.cssSource = \"js/piecemaker/piecemaker.css\";
+         flashvars.xmlSource = \"js/piecemaker/piecemaker.xml\";
+         flashvars.imageSource = \"images\";
+         var params = {};
+         params.play = \"false\";
+         \nparams.menu = \"false\";
+         params.scale = \"showall\";
+         \nparams.wmode = \"transparent\";
+         params.allowfullscreen = \"true\";
+         \nparams.allowscriptaccess = \"sameDomain\";
+         params.allownetworking = \"all\";
+         swfobject.embedSWF('js/piecemaker/piecemaker.swf', 'slideshow-3d', '960', '430', '10', null, flashvars, params, null);\n// ]]>\n"]
+  #_[:style
+       {:type "text/css", :media "screen"}
+        "#slideshow-3d {visibility:hidden}"])
+
 (defn head [title]
   [:head
    [:meta {:charset "utf=8"}]
-   [:title (str title)]
-   (include-css "/css/main.css")])
+      (include-css "/css/main.css")
+      (include-css "js/prettyPhoto/css/prettyPhoto.css")
+     (include-js "js/jquery_1.4.2.js")
+     (include-js "js/jqueryui.js")
+     (include-js "js/easing.js")
+     (include-js "js/jquery.cycle.all.js")
+     (include-js "js/tooltip/jquery.tools.min.js")
+     (include-js "js/filterable.pack.js") 
+     (include-js "js/prettyPhoto/js/jquery.prettyPhoto.js")
+     (include-js "js/jquery.tabs/jquery.tabs.pack.js")
+     (include-js "js/custom.js")
+     ;(include-css "/css/login.css") 
+     (include-js "js/cufon-yui.js")
+     (include-js "js/piecemaker/swfobject/swfobject.js")
+   (identity slide)
+   [:title (str title)]])
 
 (defn header [user]
   [:div#home-header
@@ -294,6 +334,8 @@
      [:div#bottom
       [:div.wrapper "© Copyright 2014. All Rights Reserved"]]))
 
+
+
 (defn body-list [user page]
   [:body  
    (retreive-data)   
@@ -301,12 +343,29 @@
    [:div#main    
     [:div.wrapper
      [:div.home-content
-      (identity gallery)
+      [:object
+             {:type "application/x-shockwave-flash",
+              :data "js/piecemaker/piecemaker.swf",
+              :width "960",
+              :height "530",
+              :id "slideshow-3d",
+              :style "visibility: visible;"}           
+             [:param {:name "play", :value "false"}]
+             [:param {:name "menu", :value "false"}]
+             [:param {:name "scale", :value "showall"}]
+             [:param {:name "wmode", :value "transparent"}]
+             [:param {:name "allowfullscreen", :value "true"}]             
+              [:param {:name "allowscriptaccess", :value "sameDomain"}]             
+              [:param {:name "allownetworking", :value "all"}]          
+              [:param
+             {:name "flashvars",
+              :value
+              "cssSource=js/piecemaker/piecemaker.css&xmlSource=js/piecemaker/piecemaker.xml&imageSource=images/"}]]
+      ;(identity gallery)
       (list-of-games page)]]] 
    (identity footer)])
 
-(defn body-game [;recommendations
-                 user left-content right-content add-rev]
+(defn body-game [user left-content right-content add-rev]
   [:body     
    (header user)
    [:div#main    
@@ -314,53 +373,21 @@
      [:div.home-content        
       (identity gallery)
       [:div#all-div
-      [:p.clear]
-      [:div.headline (session/get :game)] 
-      [:div.shadow-divider]
-      (left-col ;recommendations 
-                left-content 
-                add-rev)        
-      [:div.front-middle-coll]
-      (right-col right-content)]]]] 
+       [:p.clear]
+       [:div.headline (session/get :game)] 
+       [:div.shadow-divider]
+       [:div.fmr-div
+       (left-col left-content add-rev)        
+       [:div.front-middle-coll]
+       (right-col right-content)]]]]] 
    (identity footer)])
 
-#_(defn layout 
-  ([;recommendations 
-     ;left-content
-     ;right-content
-     ;add-rev
-     game
-     ] 
-    (html5
-      (head (session/get :game))
-      (let [user (session/get :username)] 
-        (body-game
-           user
-           (get-game-information game)
-          (get-reviews game)
-          (show-add-review-box game)
-          ;recommendations 
-           ;user left-content right-content add-rev
-           ))))
-  #_([page]  
-    (html5   
-      (head "List of games")
-      (let [user (session/get :username)] 
-        (body-list user page)))))
-
-
-
 (defn layout 
-  ([;recommendations 
-    left-content
-    right-content
-    add-rev] 
+  ([left-content right-content add-rev] 
     (html5
       (head (session/get :game))
       (let [user (session/get :username)] 
-        (body-game
-          ;recommendations 
-          user left-content right-content add-rev))))
+        (body-game user left-content right-content add-rev))))
   ([page]  
     (html5   
       (head "List of games")
@@ -369,7 +396,6 @@
 
 (defn show-game [game]
   (layout 
-    ;(show-recommendations game)    
     (get-game-information game)
     (get-reviews game)
     (show-add-review-box game)))  
@@ -403,17 +429,13 @@
     ;(clojure.pprint/pprint (math/floor 2.6))    
     ; (tt)    
     ;(clojure.pprint/pprint (slurp "http://www.metacritic.com/game/pc/dota-2"))
-    ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/dota-2"))
     
     
-    
-  (time (clojure.pprint/pprint (recommend-games-for-game "Star Wars: The Old Republic")))
-        
+    ;(clojure.pprint/pprint (get-game-score "http://www.metacritic.com/game/pc/star-control-3"))
     
     
+ ;(clojure.pprint/pprint
     ;(retreive-data)
-    
-    
     ;(clojure.pprint/pprint (time (get-pub "http://www.metacritic.com/game/pc/dota-2")))
     ;(clojure.pprint/pprint (time (get-genre "http://www.metacritic.com/game/pc/dota-2")))
     ;(clojure.pprint/pprint (time (get-esrb "http://www.metacritic.com/game/pc/dota-2")))

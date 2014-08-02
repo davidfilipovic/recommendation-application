@@ -4,8 +4,6 @@ body{
 	line-height:1;
 	color:#49494b; 
 	background:#f0efeb;
-	
-	
 	font-family:Tahoma,Arial,Helvetica,sans-serif;
 	font-size:100%;
 	font-size:14px;
@@ -30,12 +28,12 @@ h1, h2, h3, h4, h5, h6{
 }
 .headline{
 	margin-top:30px;
-	margin-botton:20px; 
+	margin-bottom:20px; 
 	font-size:24px; 
 	text-align:center;
 }
 .headline-h{
-	margin:20px 0; 
+	margin:25px 0; 
 	font-size:20px; 
 	text-align:center;
 }
@@ -108,17 +106,6 @@ h1, h2, h3, h4, h5, h6{
    color: black !important; 
 }
 
-
-/* CONTENT ------------------------------------------------------------*/
-
-.content{position:relative; overflow:hidden; top:-20px; min-height:600px; line-height:1.5em;}
-.content-blog{overflow:hidden; margin-top:30px; min-height:600px; line-height:1.5em;}
-.content p, .content-blog p{margin-bottom:21px;}
-.page-content{width:960px; margin-left:20px; margin-right:20px; overflow:hidden;}
-.page-content ul{list-style-type:disc; padding-left:20px;}
-.page-content ol{list-style-type:decimal; padding-left:20px;}
-
-
 /* TABLE ------------------------------------------------------------*/
 
 table, td, th{
@@ -146,7 +133,7 @@ td{
 td, th{
 	border-bottom:1px solid white;
 	border-top:1px solid white; //#1f1f1f;
-	border-right:1px solid white;
+	//border-right:1px solid white;
 }
 
 /* INFO BOXES ------------------------------------------------------------*/
@@ -249,23 +236,57 @@ td, th{
 
 /* GAME PAGE ------------------------------------------------------------*/
 
-#all-div{}
-
+#all-div{
+}
+.fmr-div{
+	display: flex;
+    flex-direction: row;
+	display: -webkit-flex;
+}
 .home-content{
 	position:relative; 
 	overflow:hidden; 
 	top:-90px; 
 	min-height:1050px;
-	}
+}
 .front-left-col{
 	width:55.4%;
-	margin:0 10px 0 20px;
+	margin:0 20px 0 20px;
 	float:left;
+}
+.front-right-col{
+	width:35.5%;
+	float:right;
+	margin-right:33px; 
+	//min-height: 1400px;
+	display: flex;
+    flex-direction: column;
+	display: -webkit-flex;
+}
+.front-right-col .front-right-col-games{
+	width:100%;
+	float:right;
+	margin-right:10px; 
+	margin-top:0px; 
+   -webkit-flex: 1 1 auto;
+    overflow-y: auto;
+    height: 1480px;    
+}
+.front-middle-coll{
+	width:2%;
+	margin:0 0 10 0px;
+	float: left;
+	//height: 1600px;
+	padding-left: 5px;
+	text-align: center;
+	background:url("../images/top-degree.png") no-repeat; //0 -416px;
+	background-size: 10px 2000px; 
+	-o-transform:rotate(90deg);
 }
 .front-left-down-col{
 	width:500px;
 	margin:0 0px 0 0px;
-	height: 695px;
+	height: 650px;
 	padding-left: 40px;
 	padding-top: 15px;
     position: relative;
@@ -275,8 +296,7 @@ td, th{
 }
 #front-left-down-col .img{
 	position: relative;
-	background: #fff;
-	
+	background: #fff;	
 }
 .thumb-d {
 	padding: 7px;
@@ -290,21 +310,6 @@ td, th{
 	padding-right: 15px;
 	margin-right: 15px;
 }
-.front-right-col{
-	width:35.5%;
-   // margin:0 0 0 10px;
-	float:right;
-	margin-right:33px; 
-	//margin-top:100px;
-}
-.front-right-col-games{
-	width:100%;
-	float:right;
-	margin-right:10px; 
-	margin-top:0px; 
-	height: 1700px;
-	overflow: auto;
-}
 .front-right-col-title{
 	width:100%;
     height: 50px;
@@ -312,17 +317,6 @@ td, th{
 	padding-right: 15px;
 	margin-right: 10px;
 	margin-left: 0px;
-}
-.front-middle-coll{
-	width:2%;
-	margin:0 0 10 0px;
-	float: left;
-	height: 1600px;
-	padding-left: 5px;
-	text-align: center;
-	background:url("../images/top-degree.png") no-repeat; 0 -416px;
-	background-size: 10px 2000px; //left top;
-	-o-transform:rotate(90deg);
 }
 .shadow-divider1{
 	background:url("../images/sprites.png") no-repeat 0 416px;
@@ -740,7 +734,7 @@ td, th{
 /* FORMS ------------------------------------------------------------*/
 
 #reviewForm{
-	margin-bottom:18px;
+	//margin-bottom:18px;
 	//margin-right: 15px;
 }
 #reviewForm p{
