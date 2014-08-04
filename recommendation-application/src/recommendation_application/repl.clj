@@ -29,7 +29,7 @@
                     :init init
                     :auto-reload? true
                     :destroy destroy
-                    :join false}))
+                    :join true}))
     (println (str "You can view the site at http://localhost:" port))))
 
 (defn stop-server []

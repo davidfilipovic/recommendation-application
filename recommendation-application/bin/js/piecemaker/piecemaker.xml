@@ -6,13 +6,15 @@
     </Image>
     <Image Source="images/kk.jpg" Title="Slide 3">
     </Image>
-	<Image Source="images/bat.png" Title="Slide 3">
+	<Image Source="images/battle.jpg" Title="Slide 3">
     </Image>
 	<Image Source="images/r.jpg" Title="Slide 3">
     </Image>
+	<Image Source="images/ww.jpg" Title="Slide 3">
+    </Image>
   </Contents>
   <Settings
-  ImageWidth="940"
+  ImageWidth="930"
   ImageHeight="365"
   LoaderColor="0x333333"
   InnerSideColor="0x222222"
@@ -57,7 +59,7 @@
   <Transitions>
     <Transition Pieces="9" Time="1.2" Transition="easeInOutBack" Delay="0.1" DepthOffset="300" CubeDistance="30"></Transition>
     <Transition Pieces="15" Time="3" Transition="easeInOutElastic" Delay="0.03" DepthOffset="200" CubeDistance="10"></Transition>
-    <Transition Pieces="5" Time="1.3" Transition="easeInOutCubic" Delay="0.1" DepthOffset="500" CubeDistance="50"></Transition>
+    <Transition Pieces="10" Time="1.3" Transition="easeInOutCubic" Delay="0.1" DepthOffset="500" CubeDistance="50"></Transition>
     <Transition Pieces="9" Time="1.25" Transition="easeInOutBack" Delay="0.1" DepthOffset="900" CubeDistance="5"></Transition>
   </Transitions>
 </Piecemaker>
