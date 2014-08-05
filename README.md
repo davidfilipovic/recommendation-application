@@ -14,15 +14,13 @@ One note: *all* types of games that are implemented for playing on PC are includ
 
   Running this application is fairly simple. First you'll need to download it, in either way by cloning this repo to desktop or by downloading zip file. Read this instruction until the end, to find the most convinient way for you to run this application.
 
-  Then, you will need a database. For this application, I've used mongoDB, which is NoSQL database, and presents cross-platform document-oriented database.
+ First, you will need a database. For this application, I've used mongoDB, which is NoSQL database, and presents cross-platform document-oriented database.
   To start it, get **Mongo Database** from this [link](http://www.mongodb.org), install it, then navigate to *../bin/mongodb.exe* and wait until it has made connection to the localhost. 
 
-  After that, you'll need to download and install [Leiningen](http://leiningen.org). **Leiningen** presents dependency management tool for configuration of projects written in the CLojure. It enables its user to create, bulid, test and deploy projects. If your machine is running on Microsoft Windows, than you can handy get [win instaler](http://leiningen-win-installer.djpowell.net), which will do all dirty work with PATH variable and similar stuff for you. 
+  After that, you'll need to download and install [Leiningen](http://leiningen.org). **Leiningen** presents dependency management tool for configuration of projects written in the CLojure. It enables its user to create, bulid, test and deploy projects. If your machine is running on Microsoft Windows, than you can handy get [win instaler](http://leiningen-win-installer.djpowell.net), which will do all dirty work with PATH variable and similar stuff for you. After you have installed Leiningen open the command prompt, navigate to project folder and type **lein run**.
   
   The most easiest way to start application is to have Counterclockwise instaled as a Eclipse plugin, because in that case you already have Leiningen, and all you have to do to start application is to open project in Eclipse. To do that, first create new project (File->New->General->Project), choose  a project's name, uncheck *use default location*, and browse to the project folder. Once the application is opened in Eclipse's explorer, right click on the project, and choose Configure->Convert to Leiningen Project. Then, press **Alt L, L** (or right click on project, and then Leiningen->Generic Leiningen Command Line) and type **run**. You can find other informations related to installing and configuring Counterclockwise along with Leiningen [here](http://doc.ccw-ide.org/documentation.html).
   
-  If you don't have Eclipse, after you have installed Leiningen open the command prompt, navigate to project folder and type **lein run**.
-
 ## Libraries used 
 
 ### [Ring](https://github.com/ring-clojure/ring) and [Compojure](https://github.com/weavejester/compojure)
