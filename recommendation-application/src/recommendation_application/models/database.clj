@@ -13,11 +13,13 @@
 (defn empty-db [table]
   (mc/remove db table))
 
+(defn get-all [table]
+  (mc/find-maps db table))
+
 (defn init-db []
    connection
-  ; (empty-db)
- ; (insert-admin)
- )
+ (if (empty? (get-all "users"))
+   (insert-admin)))
 
 (defn create-new-user [name email username password]
   (mc/insert db "users" {:_id (ObjectId.) :name name :email email :username username :password password }))
@@ -42,9 +44,6 @@
 (defn save-game
   [game]
   (mc/insert db "games" game))
-
-(defn get-all [table]
-  (mc/find-maps db table))
 
 (defn drop-all-data [] 
   (mc/remove db "games"))
