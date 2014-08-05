@@ -6,16 +6,16 @@
     </Image>
     <Image Source="images/kk.jpg" Title="Slide 3">
     </Image>
-	<Image Source="images/battle.jpg" Title="Slide 3">
+	<Image Source="images/diablo3.jpg" Title="Slide 4">
     </Image>
-	<Image Source="images/r.jpg" Title="Slide 3">
+	<Image Source="images/r.jpg" Title="Slide 5">
     </Image>
-	<Image Source="images/ww.jpg" Title="Slide 3">
+	<Image Source="images/sky.jpg" Title="Slide 6">
     </Image>
   </Contents>
   <Settings
   ImageWidth="930"
-  ImageHeight="365"
+  ImageHeight="400"
   LoaderColor="0x333333"
   InnerSideColor="0x222222"
   SideShadowAlpha="0.8"

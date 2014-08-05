@@ -53,7 +53,7 @@
     (if-not (empty? games)
       [:div#genId
        [:div.headline {:style "margin-bottom: 15px; margin-top: 1px;"} (str "List of all games")]
-       [:div.headline-l (str "There are "(count (get-all-games)) " games currently in database")]
+       [:div.headline-l (str "There are "(count (get-all-games))" games currently in database")]
        [:div.shadow-divider]
        [:div.list-all
         [:div.front-left-col-games  
@@ -94,7 +94,8 @@
       
       [:div.genId
        [:p.clear]
-       [:div.headline (str "There are no games in database currently. Please refresh the page. " (count (get-all-games)))]
+       [:div.headline (str "Please wait until the database is populated. Refresh the page occasionally.")]
+        [:div.headline-l (str "There are "(count (get-all-games))" games currently in database")]
        [:div.shadow-divider]])))
 
 (def slide
